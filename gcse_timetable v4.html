@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GCSE Weekly Timetable</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d14;
+    --surface: #13131f;
+    --card: #1a1a2e;
+    --border: #2a2a45;
+    --accent: #7c6af7;
+    --accent2: #f76a8c;
+
+    --science: #4ecdc4;
+    --science-bg: rgba(78,205,196,0.12);
+    --math: #f7c948;
+    --math-bg: rgba(247,201,72,0.12);
+    --english: #f76a8c;
+    --english-bg: rgba(247,106,140,0.12);
+    --german: #6af7b4;
+    --german-bg: rgba(106,247,180,0.12);
+    --re: #c96af7;
+    --re-bg: rgba(201,106,247,0.12);
+    --pshe: #888;
+    --pshe-bg: rgba(136,136,136,0.08);
+    --free: #7c6af7;
+    --free-bg: rgba(124,106,247,0.08);
+
+    --text: #e8e8f0;
+    --muted: #6b6b8a;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 32px 20px 60px;
+  }
+
+  /* Subtle grid texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.18;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; }
+
+  header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .header-left h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+    background: linear-gradient(135deg, #fff 30%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header-left p {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 6px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Grid */
+  .grid-container {
+    display: grid;
+    grid-template-columns: 90px repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .day-header {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 12px;
+    text-align: center;
+  }
+
+  .day-header span {
+    display: block;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    color: #444460;
+    margin-top: 2px;
+    text-transform: uppercase;
+  }
+
+  .time-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: right;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-weight: 300;
+    letter-spacing: 0.03em;
+  }
+
+  .slot {
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    min-height: 72px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s;
+    border: 1px solid transparent;
+    cursor: default;
+  }
+
+  .slot:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+
+  .slot::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 3px 0 0 3px;
+  }
+
+  .slot-subject {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 1.2;
+  }
+
+  .slot-tool {
+    font-size: 10.5px;
+    font-weight: 400;
+    opacity: 0.75;
+    letter-spacing: 0.02em;
+  }
+
+  .slot-tag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: 2px;
+    width: fit-content;
+  }
+
+  .slot-empty {
+    background: transparent;
+    border: 1px dashed var(--border);
+    opacity: 0.4;
+  }
+
+  /* Subject colours */
+  .science    { background: var(--science-bg);  border-color: rgba(78,205,196,0.2);  color: var(--science); }
+  .science::before { background: var(--science); }
+  .science .slot-tag { background: rgba(78,205,196,0.15); color: var(--science); }
+
+  .math       { background: var(--math-bg);     border-color: rgba(247,201,72,0.2);  color: var(--math); }
+  .math::before { background: var(--math); }
+  .math .slot-tag { background: rgba(247,201,72,0.15); color: var(--math); }
+
+  .english    { background: var(--english-bg);  border-color: rgba(247,106,140,0.2); color: var(--english); }
+  .english::before { background: var(--english); }
+  .english .slot-tag { background: rgba(247,106,140,0.15); color: var(--english); }
+
+  .german     { background: var(--german-bg);   border-color: rgba(106,247,180,0.2); color: var(--german); }
+  .german::before { background: var(--german); }
+  .german .slot-tag { background: rgba(106,247,180,0.15); color: var(--german); }
+
+  .re         { background: var(--re-bg);       border-color: rgba(201,106,247,0.2); color: var(--re); }
+  .re::before { background: var(--re); }
+  .re .slot-tag { background: rgba(201,106,247,0.15); color: var(--re); }
+
+  .pshe-slot  { background: var(--pshe-bg);     border-color: rgba(136,136,136,0.15); color: var(--pshe); }
+  .pshe-slot::before { background: var(--pshe); }
+  .pshe-slot .slot-tag { background: rgba(136,136,136,0.12); color: var(--pshe); }
+
+  .free-slot  { background: var(--free-bg);     border-color: rgba(124,106,247,0.15); color: var(--free); }
+  .free-slot::before { background: var(--free); }
+  .free-slot .slot-tag { background: rgba(124,106,247,0.12); color: var(--free); }
+
+  /* Clickable slots */
+  .slot.clickable {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .slot.clickable:active {
+    transform: scale(0.97);
+  }
+
+  /* Done / ticked state */
+  .slot.done {
+    opacity: 0.55;
+    filter: saturate(0.3);
+  }
+
+  .slot.done .slot-subject {
+    text-decoration: line-through;
+    text-decoration-color: currentColor;
+    opacity: 0.7;
+  }
+
+  .tick-icon {
+    position: absolute;
+    top: 7px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    opacity: 0.4;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .slot.done .tick-icon {
+    opacity: 1;
+    background: currentColor;
+    color: #0d0d14;
+    border-color: currentColor;
+  }
+
+  .slot.done .tick-icon::after {
+    content: '✓';
+    color: #0d0d14;
+    font-weight: 900;
+    font-size: 12px;
+  }
+
+  .slot:not(.done) .tick-icon::after {
+    content: '○';
+    opacity: 0.5;
+  }
+
+  /* Progress bar */
+  .progress-bar-wrap {
+    margin-bottom: 28px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .progress-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    color: var(--muted);
+    min-width: 110px;
+  }
+
+  .progress-label span {
+    color: var(--text);
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--accent), #f76a8c);
+    transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    width: 0%;
+  }
+
+  .progress-pct {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    min-width: 42px;
+    text-align: right;
+    background: linear-gradient(135deg, var(--accent), #f76a8c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Empty slots become add buttons */
+  .slot-empty {
+    background: transparent !important;
+    border: 1px dashed var(--border) !important;
+    opacity: 0.5;
+    cursor: pointer !important;
+    transition: opacity 0.15s, border-color 0.15s, transform 0.15s !important;
+  }
+  .slot-empty:hover {
+    opacity: 1 !important;
+    border-color: var(--accent) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .add-plus-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    gap: 3px;
+    color: var(--accent);
+  }
+  .add-plus-label span:first-child {
+    font-size: 20px;
+    line-height: 1;
+    opacity: 0.6;
+  }
+  .add-plus-label span:last-child {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.5;
+  }
+
+  /* Custom added slot */
+  .slot.custom-slot {
+    background: rgba(124,106,247,0.10);
+    border-color: rgba(124,106,247,0.25);
+    color: #b8b0ff;
+    cursor: pointer;
+  }
+  .slot.custom-slot::before { background: #7c6af7; }
+  .slot.custom-slot .slot-tag { background: rgba(124,106,247,0.15); color: #b8b0ff; }
+
+  .slot-remove-btn {
+    position: absolute;
+    bottom: 5px; right: 7px;
+    font-size: 9px;
+    background: rgba(247,106,140,0.15);
+    color: #f76a8c;
+    border: none; border-radius: 4px;
+    padding: 2px 6px;
+    cursor: pointer;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 10;
+  }
+  .slot.custom-slot:hover .slot-remove-btn { opacity: 1; }
+
+  /* Add-lesson modal */
+  #add-modal {
+    display: none; position: fixed; inset: 0;
+    z-index: 1001; align-items: center; justify-content: center;
+  }
+  #add-modal-backdrop {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+  }
+  #add-modal-box {
+    position: relative; z-index: 1;
+    background: #1a1a2e; border: 1px solid #2a2a45;
+    border-radius: 16px; padding: 28px;
+    width: min(440px, 92vw);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+    animation: modalIn 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .add-modal-title {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 18px; color: #e8e8f0; margin-bottom: 4px;
+  }
+  .add-modal-sub { font-size: 12px; color: #6b6b8a; margin-bottom: 20px; }
+  .add-field { margin-bottom: 14px; }
+  .add-field label {
+    display: block; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: #6b6b8a; margin-bottom: 6px;
+  }
+  .add-field input, .add-field select {
+    width: 100%; background: #0d0d14;
+    border: 1px solid #2a2a45; border-radius: 8px;
+    color: #e8e8f0; font-family: 'DM Sans', sans-serif;
+    font-size: 13px; padding: 9px 12px;
+    outline: none; transition: border-color 0.15s;
+    -webkit-appearance: none; appearance: none;
+  }
+  .add-field input:focus, .add-field select:focus { border-color: #7c6af7; }
+  .add-field select option { background: #1a1a2e; }
+  .colour-swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+  .swatch {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2.5px solid transparent; cursor: pointer;
+    transition: transform 0.12s, border-color 0.12s;
+  }
+  .swatch:hover { transform: scale(1.15); }
+  .swatch.selected { border-color: #fff !important; transform: scale(1.2); }
+  .add-modal-btns { display: flex; gap: 8px; margin-top: 20px; }
+  .btn-cancel-add {
+    flex: 1; padding: 10px; border-radius: 8px;
+    border: 1px solid #2a2a45; background: transparent;
+    color: #6b6b8a; font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 11px; letter-spacing: 0.06em;
+    text-transform: uppercase; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-cancel-add:hover { border-color: #f76a8c; color: #f76a8c; }
+  .btn-confirm-add {
+    flex: 2; padding: 10px; border-radius: 8px;
+    border: none; cursor: pointer;
+    background: linear-gradient(135deg, #7c6af7, #f76a8c);
+    color: #fff; font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 11px; letter-spacing: 0.06em;
+    text-transform: uppercase; transition: opacity 0.15s;
+  }
+  .btn-confirm-add:hover { opacity: 0.85; }
+
+  .lesson-badge {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.06);
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+
+  /* Tips section */
+  .tips {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+
+  .tip-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+
+  .tip-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+  }
+
+  .tip-card p {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .tip-card .tip-icon {
+    font-size: 20px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  @media (max-width: 700px) {
+    .grid-container { grid-template-columns: 60px repeat(5, 1fr); gap: 3px; }
+    .slot { min-height: 60px; padding: 7px 7px; }
+    .slot-subject { font-size: 11px; }
+    .slot-tool { display: none; }
+    .day-header { font-size: 11px; padding: 8px 4px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="header-left">
+      <h1>Weekly Timetable</h1>
+      <p>Year 10 &nbsp;·&nbsp; GCSE Study Plan &nbsp;·&nbsp; Online Learning</p>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#4ecdc4"></div>Science</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f7c948"></div>Maths</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f76a8c"></div>English</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#6af7b4"></div>German</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#c96af7"></div>RE</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#7c6af7"></div>Free Study</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#555"></div>PSHE</div>
+    </div>
+  </header>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-label">This week: <span id="done-count">0</span> / <span id="total-count">0</span> done</div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="progress-pct" id="progress-pct">0%</div>
+  </div>
+
+  <div class="grid-container">
+
+    <!-- Header row -->
+    <div></div>
+    <div class="day-header">Mon<span>Day 1</span></div>
+    <div class="day-header">Tue<span>Day 2</span></div>
+    <div class="day-header">Wed<span>Day 3</span></div>
+    <div class="day-header">Thu<span>Day 4</span></div>
+    <div class="day-header">Fri<span>Day 5</span></div>
+
+    <!-- ROW: 9:00 -->
+    <div class="time-label">9:00</div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Free Study</div>
+      <div class="slot-tool">English reading / Oak RE notes</div>
+      <div class="slot-tag">Self-led</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Free Study</div>
+      <div class="slot-tool">Dr Frost warm-up / flashcards</div>
+      <div class="slot-tag">Self-led</div>
+    </div>
+    <div class="slot science clickable">
+      <div class="tick-icon"></div>
+      <div class="lesson-badge">Lesson</div>
+      <div class="slot-subject">Science</div>
+      <div class="slot-tool">Live lesson · 45 min</div>
+      <div class="slot-tag">Tassomai after</div>
+    </div>
+    <div class="slot science clickable">
+      <div class="tick-icon"></div>
+      <div class="lesson-badge">Lesson</div>
+      <div class="slot-subject">Science</div>
+      <div class="slot-tool">Live lesson · 45 min</div>
+      <div class="slot-tag">Tassomai after</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Free Study</div>
+      <div class="slot-tool">Review the week's weakest topic</div>
+      <div class="slot-tag">Self-led</div>
+    </div>
+
+    <!-- ROW: 9:45 -->
+    <div class="time-label">9:45</div>
+    <div class="slot science clickable">
+      <div class="tick-icon"></div>
+      <div class="lesson-badge">Lesson</div>
+      <div class="slot-subject">Science</div>
+      <div class="slot-tool">Live lesson · 45 min</div>
+      <div class="slot-tag">Tassomai after</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Free Study</div>
+      <div class="slot-tool">German: Duolingo + Language Nut</div>
+      <div class="slot-tag">Self-led</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Free Study</div>
+      <div class="slot-tool">Science: Tassomai 20 min</div>
+      <div class="slot-tag">Self-led</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Free Study</div>
+      <div class="slot-tool">Science: Tassomai 20 min</div>
+      <div class="slot-tag">Self-led</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Free Study</div>
+      <div class="slot-tool">German: Duolingo + Language Nut</div>
+      <div class="slot-tag">Self-led</div>
+    </div>
+
+    <!-- ROW: 10:30 -->
+    <div class="time-label">10:30</div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Break</div>
+      <div class="slot-tool">Rest · fresh air · snack</div>
+      <div class="slot-tag">Break</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Break</div>
+      <div class="slot-tool">Rest · fresh air · snack</div>
+      <div class="slot-tag">Break</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Break</div>
+      <div class="slot-tool">Rest · fresh air · snack</div>
+      <div class="slot-tag">Break</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Break</div>
+      <div class="slot-tool">Rest · fresh air · snack</div>
+      <div class="slot-tag">Break</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Break</div>
+      <div class="slot-tool">Rest · fresh air · snack</div>
+      <div class="slot-tag">Break</div>
+    </div>
+
+    <!-- ROW: 11:00 -->
+    <div class="time-label">11:00</div>
+    <div class="slot math clickable">
+      <div class="tick-icon"></div>
+      <div class="lesson-badge">Lesson</div>
+      <div class="slot-subject">Maths</div>
+      <div class="slot-tool">Live lesson · 45 min</div>
+      <div class="slot-tag">Dr Frost after</div>
+    </div>
+    <div class="slot english clickable">
+      <div class="tick-icon"></div>
+      <div class="lesson-badge">Lesson</div>
+      <div class="slot-subject">English</div>
+      <div class="slot-tool">Live lesson · 45 min</div>
+      <div class="slot-tag">Notes review after</div>
+    </div>
+    <div class="slot english clickable">
+      <div class="tick-icon"></div>
+      <div class="lesson-badge">Lesson</div>
+      <div class="slot-subject">English</div>
+      <div class="slot-tool">Live lesson · 45 min</div>
+      <div class="slot-tag">Notes review after</div>
+    </div>
+    <div class="slot english clickable">
+      <div class="tick-icon"></div>
+      <div class="lesson-badge">Lesson</div>
+      <div class="slot-subject">English</div>
+      <div class="slot-tool">Live lesson · 45 min</div>
+      <div class="slot-tag">Notes review after</div>
+    </div>
+    <div class="slot slot-empty" onclick="openAddModal(this)"><div class="add-plus-label"><span>+</span><span>Add lesson</span></div></div>
+
+    <!-- ROW: 11:45 -->
+    <div class="time-label">11:45</div>
+    <div class="slot english clickable">
+      <div class="tick-icon"></div>
+      <div class="lesson-badge">Lesson</div>
+      <div class="slot-subject">English</div>
+      <div class="slot-tool">Live lesson · 45 min</div>
+      <div class="slot-tag">Notes review after</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Free Study</div>
+      <div class="slot-tool">RE: Oak Academy lesson</div>
+      <div class="slot-tag">Self-led</div>
+    </div>
+    <div class="slot math clickable">
+      <div class="tick-icon"></div>
+      <div class="lesson-badge">Lesson</div>
+      <div class="slot-subject">Maths</div>
+      <div class="slot-tool">Live lesson · 45 min</div>
+      <div class="slot-tag">Dr Frost after</div>
+    </div>
+    <div class="slot math clickable">
+      <div class="tick-icon"></div>
+      <div class="lesson-badge">Lesson</div>
+      <div class="slot-subject">Maths</div>
+      <div class="slot-tool">Live lesson · 45 min</div>
+      <div class="slot-tag">Dr Frost after</div>
+    </div>
+    <div class="slot english clickable">
+      <div class="tick-icon"></div>
+      <div class="lesson-badge">Lesson</div>
+      <div class="slot-subject">English</div>
+      <div class="slot-tool">Live lesson · 45 min</div>
+      <div class="slot-tag">Notes review after</div>
+    </div>
+
+    <!-- ROW: 12:30 -->
+    <div class="time-label">12:30</div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Lunch Break</div>
+      <div class="slot-tool">Eat · rest · away from screen</div>
+      <div class="slot-tag">Lunch</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Lunch Break</div>
+      <div class="slot-tool">Eat · rest · away from screen</div>
+      <div class="slot-tag">Lunch</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Lunch Break</div>
+      <div class="slot-tool">Eat · rest · away from screen</div>
+      <div class="slot-tag">Lunch</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Lunch Break</div>
+      <div class="slot-tool">Eat · rest · away from screen</div>
+      <div class="slot-tag">Lunch</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Lunch Break</div>
+      <div class="slot-tool">Eat · rest · away from screen</div>
+      <div class="slot-tag">Lunch</div>
+    </div>
+
+    <!-- ROW: 1:30 -->
+    <div class="time-label">1:30</div>
+    <div class="slot german clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">German</div>
+      <div class="slot-tool">Duolingo · Language Nut vocab</div>
+      <div class="slot-tag">Self-led</div>
+    </div>
+    <div class="slot re clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">RE</div>
+      <div class="slot-tool">Oak Academy lesson + notes</div>
+      <div class="slot-tag">Self-led</div>
+    </div>
+    <div class="slot german clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">German</div>
+      <div class="slot-tool">Duolingo · Language Nut vocab</div>
+      <div class="slot-tag">Self-led</div>
+    </div>
+    <div class="slot re clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">RE</div>
+      <div class="slot-tool">Oak Academy lesson + notes</div>
+      <div class="slot-tag">Self-led</div>
+    </div>
+    <div class="slot math clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Maths</div>
+      <div class="slot-tool">Dr Frost practice · past Qs</div>
+      <div class="slot-tag">Self-led</div>
+    </div>
+
+    <!-- ROW: 2:15 PSHE -->
+    <div class="time-label">2:15</div>
+    <div class="slot slot-empty" onclick="openAddModal(this)"><div class="add-plus-label"><span>+</span><span>Add lesson</span></div></div>
+    <div class="slot pshe-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="lesson-badge">Lesson</div>
+      <div class="slot-subject">PSHE → Study</div>
+      <div class="slot-tool">Science: Tassomai quiz</div>
+      <div class="slot-tag">During PSHE</div>
+    </div>
+    <div class="slot slot-empty" onclick="openAddModal(this)"><div class="add-plus-label"><span>+</span><span>Add lesson</span></div></div>
+    <div class="slot pshe-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="lesson-badge">Lesson</div>
+      <div class="slot-subject">PSHE → Study</div>
+      <div class="slot-tool">German: Language Nut</div>
+      <div class="slot-tag">During PSHE</div>
+    </div>
+    <div class="slot pshe-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="lesson-badge">Lesson</div>
+      <div class="slot-subject">PSHE → Study</div>
+      <div class="slot-tool">RE: Oak Academy / flashcards</div>
+      <div class="slot-tag">During PSHE</div>
+    </div>
+
+    <!-- ROW: 3:00 -->
+    <div class="time-label">3:00</div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Wind Down</div>
+      <div class="slot-tool">Light reading / Seneca Learning</div>
+      <div class="slot-tag">Optional</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Wind Down</div>
+      <div class="slot-tool">Light reading / Seneca Learning</div>
+      <div class="slot-tag">Optional</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Wind Down</div>
+      <div class="slot-tool">Light reading / Seneca Learning</div>
+      <div class="slot-tag">Optional</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">Wind Down</div>
+      <div class="slot-tool">Light reading / Seneca Learning</div>
+      <div class="slot-tag">Optional</div>
+    </div>
+    <div class="slot free-slot clickable">
+      <div class="tick-icon"></div>
+      <div class="slot-subject">End of Week Review</div>
+      <div class="slot-tool">Write 3 things learned this week</div>
+      <div class="slot-tag">Optional</div>
+    </div>
+
+  </div>
+
+  <!-- Tips -->
+  <div class="tips">
+    <div class="tip-card">
+      <span class="tip-icon">⚗️</span>
+      <h3 style="color:#4ecdc4">Science — Tassomai</h3>
+      <p>Do at least 20 Tassomai questions right after your science lesson while it's fresh. Aim for daily streaks — the spaced repetition it uses is highly effective.</p>
+    </div>
+    <div class="tip-card">
+      <span class="tip-icon">📐</span>
+      <h3 style="color:#f7c948">Maths — Dr Frost</h3>
+      <p>After each lesson, complete the matching Dr Frost topic. Focus on topics you got wrong — re-doing familiar ones won't help as much.</p>
+    </div>
+    <div class="tip-card">
+      <span class="tip-icon">📖</span>
+      <h3 style="color:#f76a8c">English</h3>
+      <p>After every lesson, write a short summary of the key points in your own words. Build a bank of quotes for literature texts — test yourself regularly.</p>
+    </div>
+    <div class="tip-card">
+      <span class="tip-icon">🇩🇪</span>
+      <h3 style="color:#6af7b4">German — Duolingo + Language Nut</h3>
+      <p>Keep your Duolingo streak daily (even just 5 min). Use Language Nut to drill vocabulary sets from your actual GCSE topics like food, travel, and family.</p>
+    </div>
+    <div class="tip-card">
+      <span class="tip-icon">🙏</span>
+      <h3 style="color:#c96af7">RE — Oak Academy</h3>
+      <p>Oak Academy has full GCSE RE lessons. Watch one per week and make short bullet-point notes. RE rewards structured essay answers — practice these early.</p>
+    </div>
+    <div class="tip-card">
+      <span class="tip-icon">💡</span>
+      <h3 style="color:#7c6af7">During PSHE</h3>
+      <p>Since you don't need to actively engage, use these slots for low-noise tasks like Tassomai quizzes, Duolingo, or reviewing flashcards — perfect multitasking.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== ADD LESSON MODAL ===== -->
+<div id="add-modal">
+  <div id="add-modal-backdrop" onclick="closeAddModal()"></div>
+  <div id="add-modal-box">
+    <div class="add-modal-title">Add a Lesson</div>
+    <div class="add-modal-sub" id="add-modal-slot-info">Adding to slot</div>
+
+    <div class="add-field">
+      <label>Subject name</label>
+      <input id="add-subject" type="text" placeholder="e.g. History, Art, PE…" maxlength="40">
+    </div>
+    <div class="add-field">
+      <label>Details / tool</label>
+      <input id="add-tool" type="text" placeholder="e.g. BBC Bitesize · revision notes" maxlength="60">
+    </div>
+    <div class="add-field">
+      <label>Tag label</label>
+      <input id="add-tag" type="text" placeholder="e.g. Lesson, Self-led, Revision…" maxlength="20">
+    </div>
+    <div class="add-field">
+      <label>Colour</label>
+      <div class="colour-swatches">
+        <div class="swatch selected" data-colour="purple"  style="background:#7c6af7;" onclick="pickColour(this)"></div>
+        <div class="swatch"          data-colour="teal"    style="background:#4ecdc4;" onclick="pickColour(this)"></div>
+        <div class="swatch"          data-colour="yellow"  style="background:#f7c948;" onclick="pickColour(this)"></div>
+        <div class="swatch"          data-colour="pink"    style="background:#f76a8c;" onclick="pickColour(this)"></div>
+        <div class="swatch"          data-colour="green"   style="background:#6af7b4;" onclick="pickColour(this)"></div>
+        <div class="swatch"          data-colour="violet"  style="background:#c96af7;" onclick="pickColour(this)"></div>
+        <div class="swatch"          data-colour="orange"  style="background:#f79c48;" onclick="pickColour(this)"></div>
+        <div class="swatch"          data-colour="blue"    style="background:#48a9f7;" onclick="pickColour(this)"></div>
+      </div>
+    </div>
+
+    <div class="add-modal-btns">
+      <button class="btn-cancel-add" onclick="closeAddModal()">Cancel</button>
+      <button class="btn-confirm-add" onclick="confirmAddLesson()">+ Add Lesson</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NOTES MODAL ===== -->
+<div id="notes-modal" style="display:none; position:fixed; inset:0; z-index:1000; align-items:center; justify-content:center;">
+  <div id="modal-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);"></div>
+  <div id="modal-box" style="
+    position:relative; z-index:1;
+    background:#1a1a2e; border:1px solid #2a2a45;
+    border-radius:16px; padding:28px; width:min(420px,90vw);
+    box-shadow:0 24px 64px rgba(0,0,0,0.6);
+    font-family:'DM Sans',sans-serif;
+    animation: modalIn 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  ">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;">
+      <div>
+        <div id="modal-subject" style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#e8e8f0;"></div>
+        <div id="modal-tool" style="font-size:12px;color:#6b6b8a;margin-top:3px;"></div>
+      </div>
+      <button id="modal-close" style="background:none;border:none;color:#6b6b8a;font-size:20px;cursor:pointer;line-height:1;padding:2px 6px;border-radius:6px;" onmouseover="this.style.color='#e8e8f0'" onmouseout="this.style.color='#6b6b8a'">✕</button>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-bottom:16px;">
+      <button id="btn-tick" onclick="modalToggleDone()" style="
+        flex:1; padding:10px; border-radius:8px; border:none; cursor:pointer;
+        font-family:'Syne',sans-serif; font-weight:700; font-size:12px;
+        letter-spacing:0.06em; text-transform:uppercase; transition:all 0.15s;
+      ">✓ Mark as done</button>
+    </div>
+
+    <div style="margin-bottom:12px;">
+      <label style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6b6b8a;display:block;margin-bottom:6px;">📝 Notes — how did it go?</label>
+      <textarea id="modal-notes" placeholder="e.g. Completed 25 Tassomai questions, struggled with photosynthesis..." style="
+        width:100%; min-height:90px; resize:vertical;
+        background:#0d0d14; border:1px solid #2a2a45; border-radius:8px;
+        color:#e8e8f0; font-family:'DM Sans',sans-serif; font-size:13px;
+        padding:10px 12px; outline:none; line-height:1.5;
+        transition:border-color 0.15s;
+      " onfocus="this.style.borderColor='#7c6af7'" onblur="this.style.borderColor='#2a2a45'"></textarea>
+    </div>
+
+    <button id="modal-save" onclick="saveModal()" style="
+      width:100%; padding:11px; border-radius:8px; border:none; cursor:pointer;
+      background:linear-gradient(135deg,#7c6af7,#f76a8c);
+      color:#fff; font-family:'Syne',sans-serif; font-weight:700;
+      font-size:12px; letter-spacing:0.06em; text-transform:uppercase;
+      transition:opacity 0.15s;
+    " onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Save Notes</button>
+  </div>
+</div>
+
+<!-- ===== HISTORY PANEL ===== -->
+<div id="history-section" style="max-width:1100px;margin:32px auto 0;position:relative;z-index:1;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px;">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;background:linear-gradient(135deg,#fff 30%,#7c6af7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Weekly History</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <div style="font-size:12px;color:#6b6b8a;">Current week:</div>
+      <input id="week-label" type="text" placeholder="e.g. Week 1 · 3 Mar" style="
+        background:#1a1a2e;border:1px solid #2a2a45;border-radius:7px;
+        color:#e8e8f0;font-family:'DM Sans',sans-serif;font-size:12px;
+        padding:6px 10px;outline:none;width:150px;
+        transition:border-color 0.15s;
+      " onfocus="this.style.borderColor='#7c6af7'" onblur="this.style.borderColor='#2a2a45'">
+      <button onclick="saveWeekToHistory()" style="
+        padding:7px 14px;border-radius:7px;border:none;cursor:pointer;
+        background:#7c6af7;color:#fff;font-family:'Syne',sans-serif;
+        font-weight:700;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;
+        transition:opacity 0.15s;
+      " onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Save Week ↓</button>
+      <button onclick="resetCurrentWeek()" style="
+        padding:7px 14px;border-radius:7px;border:1px solid #2a2a45;cursor:pointer;
+        background:transparent;color:#6b6b8a;font-family:'Syne',sans-serif;
+        font-weight:700;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;
+        transition:all 0.15s;
+      " onmouseover="this.style.borderColor='#f76a8c';this.style.color='#f76a8c'" onmouseout="this.style.borderColor='#2a2a45';this.style.color='#6b6b8a'">New Week</button>
+    </div>
+  </div>
+  <div id="history-cards" style="display:flex;flex-direction:column;gap:10px;"></div>
+  <div id="history-empty" style="text-align:center;padding:32px;color:#444460;font-size:13px;font-style:italic;">No saved weeks yet — complete this week and hit "Save Week" to start tracking your progress.</div>
+</div>
+
+<style>
+@keyframes modalIn {
+  from { opacity:0; transform:scale(0.92) translateY(10px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
+.slot.has-note::after {
+  content: '📝';
+  position: absolute;
+  bottom: 6px;
+  right: 8px;
+  font-size: 10px;
+  opacity: 0.7;
+}
+.slot.clickable { cursor: pointer; }
+
+.hist-card {
+  background: #1a1a2e;
+  border: 1px solid #2a2a45;
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.hist-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.hist-week-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #e8e8f0;
+}
+.hist-meta {
+  font-size: 11px;
+  color: #6b6b8a;
+}
+.hist-bar-track {
+  height: 5px;
+  background: #2a2a45;
+  border-radius: 99px;
+  overflow: hidden;
+}
+.hist-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #7c6af7, #f76a8c);
+  transition: width 0.6s;
+}
+.hist-notes-toggle {
+  font-size: 11px;
+  color: #7c6af7;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+.hist-notes-list {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+.hist-note-item {
+  background: #0d0d14;
+  border-left: 2px solid #7c6af7;
+  border-radius: 0 6px 6px 0;
+  padding: 6px 10px;
+  font-size: 11.5px;
+  color: #a0a0c0;
+  line-height: 1.5;
+}
+.hist-note-label {
+  font-weight: 600;
+  color: #e8e8f0;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.hist-delete-btn {
+  background: none;
+  border: none;
+  color: #444460;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+.hist-delete-btn:hover { color: #f76a8c; }
+</style>
+
+<script>
+  // ─── Storage keys ────────────────────────────────────────────────────────
+  const KEY_WEEK    = 'gcse_week_data';   // { ticked:{}, notes:{} }
+  const KEY_HIST    = 'gcse_history';     // array of saved weeks
+  const KEY_CUSTOM  = 'gcse_custom_slots'; // array of { slotEl unique id, day, time, subject, tool, tag, colour }
+
+  // ─── Helpers ─────────────────────────────────────────────────────────────
+  function load(key, fallback) {
+    try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+    catch { return fallback; }
+  }
+  function save(key, val) {
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch {} 
+  }
+
+  // ─── Colour map ──────────────────────────────────────────────────────────
+  const COLOURS = {
+    purple: { bg:'rgba(124,106,247,0.13)', border:'rgba(124,106,247,0.28)', text:'#b8b0ff', bar:'#7c6af7', tag:'rgba(124,106,247,0.18)' },
+    teal:   { bg:'rgba(78,205,196,0.12)',  border:'rgba(78,205,196,0.25)',  text:'#4ecdc4', bar:'#4ecdc4', tag:'rgba(78,205,196,0.18)' },
+    yellow: { bg:'rgba(247,201,72,0.12)',  border:'rgba(247,201,72,0.25)',  text:'#f7c948', bar:'#f7c948', tag:'rgba(247,201,72,0.18)' },
+    pink:   { bg:'rgba(247,106,140,0.12)', border:'rgba(247,106,140,0.25)', text:'#f76a8c', bar:'#f76a8c', tag:'rgba(247,106,140,0.18)' },
+    green:  { bg:'rgba(106,247,180,0.12)', border:'rgba(106,247,180,0.25)', text:'#6af7b4', bar:'#6af7b4', tag:'rgba(106,247,180,0.18)' },
+    violet: { bg:'rgba(201,106,247,0.12)', border:'rgba(201,106,247,0.25)', text:'#c96af7', bar:'#c96af7', tag:'rgba(201,106,247,0.18)' },
+    orange: { bg:'rgba(247,156,72,0.12)',  border:'rgba(247,156,72,0.25)',  text:'#f79c48', bar:'#f79c48', tag:'rgba(247,156,72,0.18)' },
+    blue:   { bg:'rgba(72,169,247,0.12)',  border:'rgba(72,169,247,0.25)',  text:'#48a9f7', bar:'#48a9f7', tag:'rgba(72,169,247,0.18)' },
+  };
+
+  // ─── State ───────────────────────────────────────────────────────────────
+  let weekData    = load(KEY_WEEK, { ticked: {}, notes: {} });
+  let customSlots = load(KEY_CUSTOM, []);
+  let activeSlotId    = null;   // notes modal
+  let addTargetEl     = null;   // which empty slot was clicked
+  let selectedColour  = 'purple';
+
+  // ─── Init ─────────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    // Re-render saved custom slots
+    customSlots.forEach(cs => renderCustomSlot(cs, false));
+
+    // Wire up all clickable slots
+    bindAllClickableSlots();
+    updateProgress();
+    renderHistory();
+  });
+
+  // ─── Bind click handlers to ALL .slot.clickable elements ─────────────────
+  function bindAllClickableSlots() {
+    const slots = document.querySelectorAll('.slot.clickable');
+    slots.forEach((slot, i) => {
+      if (slot.dataset.slotBound) return; // don't double-bind
+      slot.dataset.slotBound = '1';
+      // Assign id if not already set
+      if (!slot.dataset.slotId) {
+        slot.dataset.slotId = 'slot-' + i + '-' + Date.now();
+      }
+      const id = slot.dataset.slotId;
+      applySlotState(slot, id);
+      slot.addEventListener('click', (e) => {
+        if (e.target.classList.contains('slot-remove-btn')) return;
+        openNotesModal(slot, id);
+      });
+    });
+  }
+
+  // ─── Apply saved state visually ──────────────────────────────────────────
+  function applySlotState(slot, id) {
+    slot.classList.toggle('done', !!weekData.ticked[id]);
+    slot.classList.toggle('has-note', !!(weekData.notes[id] && weekData.notes[id].trim()));
+    let preview = slot.querySelector('.slot-note-preview');
+    if (weekData.notes[id] && weekData.notes[id].trim()) {
+      if (!preview) {
+        preview = document.createElement('div');
+        preview.className = 'slot-note-preview';
+        preview.style.cssText = 'font-size:9.5px;opacity:0.65;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;pointer-events:none;';
+        slot.appendChild(preview);
+      }
+      preview.textContent = '📝 ' + weekData.notes[id];
+    } else if (preview) { preview.remove(); }
+  }
+
+  // ─── Progress ────────────────────────────────────────────────────────────
+  function updateProgress() {
+    const slots = [...document.querySelectorAll('.slot.clickable')];
+    const done  = slots.filter(s => s.classList.contains('done')).length;
+    const total = slots.length;
+    const pct   = total ? Math.round((done / total) * 100) : 0;
+    document.getElementById('done-count').textContent  = done;
+    document.getElementById('total-count').textContent = total;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-pct').textContent  = pct + '%';
+  }
+
+  // ─── Notes modal ─────────────────────────────────────────────────────────
+  function openNotesModal(slot, id) {
+    activeSlotId = id;
+    const subject = slot.querySelector('.slot-subject')?.textContent || '';
+    const tool    = slot.querySelector('.slot-tool')?.textContent    || '';
+    const isDone  = !!weekData.ticked[id];
+    const note    = weekData.notes[id] || '';
+
+    document.getElementById('modal-subject').textContent = subject;
+    document.getElementById('modal-tool').textContent    = tool;
+    document.getElementById('modal-notes').value         = note;
+    setTickBtnStyle(document.getElementById('btn-tick'), isDone);
+
+    document.getElementById('notes-modal').style.display = 'flex';
+    setTimeout(() => document.getElementById('modal-notes').focus(), 80);
+  }
+
+  function setTickBtnStyle(btn, isDone) {
+    if (isDone) {
+      btn.textContent = '✓ Done!';
+      btn.style.cssText = 'flex:1;padding:10px;border-radius:8px;border:1px solid rgba(78,205,196,0.3);cursor:pointer;font-family:Syne,sans-serif;font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;background:rgba(78,205,196,0.15);color:#4ecdc4;transition:all .15s;';
+    } else {
+      btn.textContent = '○ Mark as done';
+      btn.style.cssText = 'flex:1;padding:10px;border-radius:8px;border:1px solid rgba(124,106,247,0.25);cursor:pointer;font-family:Syne,sans-serif;font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;background:rgba(124,106,247,0.1);color:#7c6af7;transition:all .15s;';
+    }
+  }
+
+  function modalToggleDone() {
+    if (!activeSlotId) return;
+    const isDone = !!weekData.ticked[activeSlotId];
+    if (isDone) delete weekData.ticked[activeSlotId];
+    else weekData.ticked[activeSlotId] = true;
+    save(KEY_WEEK, weekData);
+    const slot = document.querySelector(`[data-slot-id="${activeSlotId}"]`);
+    if (slot) applySlotState(slot, activeSlotId);
+    setTickBtnStyle(document.getElementById('btn-tick'), !isDone);
+    updateProgress();
+  }
+
+  function saveModal() {
+    if (!activeSlotId) return;
+    const note = document.getElementById('modal-notes').value.trim();
+    if (note) weekData.notes[activeSlotId] = note;
+    else delete weekData.notes[activeSlotId];
+    save(KEY_WEEK, weekData);
+    const slot = document.querySelector(`[data-slot-id="${activeSlotId}"]`);
+    if (slot) applySlotState(slot, activeSlotId);
+    closeNotesModal();
+  }
+
+  function closeNotesModal() {
+    document.getElementById('notes-modal').style.display = 'none';
+    activeSlotId = null;
+  }
+
+  document.getElementById('modal-close').onclick = closeNotesModal;
+  document.getElementById('modal-backdrop').onclick = closeNotesModal;
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeNotesModal(); closeAddModal(); } });
+
+  // ─── Add-lesson modal ─────────────────────────────────────────────────────
+  function openAddModal(emptySlotEl) {
+    addTargetEl = emptySlotEl;
+    selectedColour = 'purple';
+    // Reset swatches
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
+    document.querySelector('.swatch[data-colour="purple"]').classList.add('selected');
+    // Clear inputs
+    document.getElementById('add-subject').value = '';
+    document.getElementById('add-tool').value    = '';
+    document.getElementById('add-tag').value     = '';
+    // Context label
+    const timeLabel = emptySlotEl.closest('.grid-container')
+      ? (() => {
+          // Walk backwards to find the time label
+          let el = emptySlotEl;
+          while (el && !el.classList.contains('grid-container')) el = el.parentElement;
+          if (!el) return '';
+          const allChildren = [...el.children];
+          const idx = allChildren.indexOf(emptySlotEl);
+          // Time label is at start of each row (every 6 children)
+          const rowStart = Math.floor(idx / 6) * 6;
+          return allChildren[rowStart]?.textContent || '';
+        })()
+      : '';
+    // Figure out which day column
+    const days = ['Mon','Tue','Wed','Thu','Fri'];
+    const allChildren = addTargetEl.parentElement ? [...addTargetEl.parentElement.children] : [];
+    const colIdx = allChildren.indexOf(addTargetEl) % 6; // 0=time, 1-5=days
+    const dayName = colIdx >= 1 ? days[colIdx - 1] : '';
+    document.getElementById('add-modal-slot-info').textContent =
+      (dayName ? dayName + (timeLabel ? ' · ' + timeLabel : '') : 'new slot');
+
+    document.getElementById('add-modal').style.display = 'flex';
+    setTimeout(() => document.getElementById('add-subject').focus(), 80);
+  }
+
+  function closeAddModal() {
+    document.getElementById('add-modal').style.display = 'none';
+    addTargetEl = null;
+  }
+
+  function pickColour(swatchEl) {
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
+    swatchEl.classList.add('selected');
+    selectedColour = swatchEl.dataset.colour;
+  }
+
+  function confirmAddLesson() {
+    const subject = document.getElementById('add-subject').value.trim();
+    if (!subject) { document.getElementById('add-subject').focus(); document.getElementById('add-subject').style.borderColor='#f76a8c'; return; }
+    document.getElementById('add-subject').style.borderColor='';
+
+    const tool    = document.getElementById('add-tool').value.trim() || '';
+    const tag     = document.getElementById('add-tag').value.trim()  || 'Custom';
+    const colour  = selectedColour;
+    const uid     = 'custom-' + Date.now();
+
+    const cs = { uid, subject, tool, tag, colour };
+    customSlots.push(cs);
+    save(KEY_CUSTOM, customSlots);
+
+    renderCustomSlot(cs, true);
+    closeAddModal();
+  }
+
+  function renderCustomSlot(cs, bindNew) {
+    // Find the target empty slot — match by uid stored in data-custom-uid, or use addTargetEl for new
+    let targetEl = addTargetEl;
+    if (!bindNew) {
+      // On page load, find the first empty slot that hasn't been filled yet
+      // We use a queue approach — custom slots are rendered in order
+      targetEl = document.querySelector('.slot.slot-empty:not([data-custom-uid])') || null;
+    }
+    if (!targetEl) return;
+
+    targetEl.dataset.customUid = cs.uid;
+    const c = COLOURS[cs.colour] || COLOURS.purple;
+
+    // Transform the empty slot into a filled custom slot
+    targetEl.className = 'slot custom-slot clickable';
+    targetEl.style.background   = c.bg;
+    targetEl.style.borderColor  = c.border;
+    targetEl.style.color        = c.text;
+    targetEl.removeAttribute('onclick');
+    targetEl.innerHTML = `
+      <div class="tick-icon"></div>
+      <div class="slot-subject" style="color:${c.text}">${cs.subject}</div>
+      ${cs.tool ? `<div class="slot-tool">${cs.tool}</div>` : ''}
+      <div class="slot-tag" style="background:${c.tag};color:${c.text}">${cs.tag}</div>
+      <button class="slot-remove-btn" onclick="removeCustomSlot(this,'${cs.uid}')">✕ Remove</button>
+    `;
+    targetEl.style.setProperty('--slot-bar', c.bar);
+    // Inline ::before workaround via a pseudo element using box-shadow trick — use a real div instead
+    // Insert bar div
+    const bar = document.createElement('div');
+    bar.style.cssText = `position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;background:${c.bar};`;
+    targetEl.insertBefore(bar, targetEl.firstChild);
+
+    // Assign slot id and wire up notes modal
+    const slotId = cs.uid;
+    targetEl.dataset.slotId = slotId;
+    targetEl.dataset.slotBound = '';
+    applySlotState(targetEl, slotId);
+    targetEl.addEventListener('click', (e) => {
+      if (e.target.classList.contains('slot-remove-btn')) return;
+      openNotesModal(targetEl, slotId);
+    });
+    targetEl.dataset.slotBound = '1';
+    updateProgress();
+  }
+
+  function removeCustomSlot(btn, uid) {
+    const slot = btn.closest('.slot');
+    // Clear slot back to empty
+    slot.className = 'slot slot-empty';
+    slot.removeAttribute('style');
+    slot.removeAttribute('data-custom-uid');
+    slot.removeAttribute('data-slot-id');
+    slot.removeAttribute('data-slot-bound');
+    slot.innerHTML = '<div class="add-plus-label"><span>+</span><span>Add lesson</span></div>';
+    slot.onclick = function() { openAddModal(this); };
+
+    // Remove from saved list
+    customSlots = customSlots.filter(cs => cs.uid !== uid);
+    save(KEY_CUSTOM, customSlots);
+
+    // Remove tick/note for this slot
+    delete weekData.ticked[uid];
+    delete weekData.notes[uid];
+    save(KEY_WEEK, weekData);
+    updateProgress();
+  }
+
+  // ─── Weekly history ───────────────────────────────────────────────────────
+  function saveWeekToHistory() {
+    const label = document.getElementById('week-label').value.trim();
+    if (!label) { alert('Please enter a week name first (e.g. "Week 1 · 3 Mar")'); return; }
+
+    const slots = [...document.querySelectorAll('.slot.clickable')];
+    const total = slots.length;
+    const done  = slots.filter(s => s.classList.contains('done')).length;
+    const pct   = total ? Math.round((done / total) * 100) : 0;
+
+    const notesSnapshot = {};
+    slots.forEach(slot => {
+      const id      = slot.dataset.slotId;
+      const subject = slot.querySelector('.slot-subject')?.textContent || '';
+      const tool    = slot.querySelector('.slot-tool')?.textContent    || '';
+      const note    = weekData.notes[id];
+      if (note && note.trim()) notesSnapshot[subject + (tool ? ' · ' + tool : '')] = note;
+    });
+
+    const hist = load(KEY_HIST, []);
+    hist.unshift({
+      id: Date.now(), label,
+      savedAt: new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }),
+      done, total, pct, notes: notesSnapshot
+    });
+    save(KEY_HIST, hist);
+    renderHistory();
+  }
+
+  function resetCurrentWeek() {
+    if (!confirm('Start a fresh week? Ticks and notes will be cleared (history is safe).')) return;
+    weekData = { ticked: {}, notes: {} };
+    save(KEY_WEEK, weekData);
+    document.getElementById('week-label').value = '';
+    document.querySelectorAll('.slot.clickable').forEach(slot => {
+      applySlotState(slot, slot.dataset.slotId);
+    });
+    updateProgress();
+  }
+
+  function deleteHistEntry(id) {
+    if (!confirm('Delete this week from history?')) return;
+    save(KEY_HIST, load(KEY_HIST, []).filter(w => w.id !== id));
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const hist = load(KEY_HIST, []);
+    const container = document.getElementById('history-cards');
+    const empty     = document.getElementById('history-empty');
+    if (!hist.length) { container.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    container.innerHTML = hist.map(w => {
+      const noteEntries = Object.entries(w.notes || {});
+      const notesHtml = noteEntries.length
+        ? `<div class="hist-notes-toggle" onclick="toggleNotes(${w.id})">📝 ${noteEntries.length} note${noteEntries.length>1?'s':''} — click to view</div>
+           <div class="hist-notes-list" id="hist-notes-${w.id}">
+             ${noteEntries.map(([s,n]) => `<div class="hist-note-item"><div class="hist-note-label">${s}</div>${n}</div>`).join('')}
+           </div>`
+        : '<div style="font-size:11px;color:#444460;font-style:italic;">No notes saved this week</div>';
+      const barColor = w.pct >= 80 ? 'linear-gradient(90deg,#4ecdc4,#6af7b4)' :
+                       w.pct >= 50 ? 'linear-gradient(90deg,#7c6af7,#f76a8c)' :
+                                     'linear-gradient(90deg,#f76a8c,#f7c948)';
+      return `<div class="hist-card">
+        <div class="hist-card-top">
+          <div><div class="hist-week-name">${w.label}</div>
+          <div class="hist-meta">Saved ${w.savedAt} &nbsp;·&nbsp; ${w.done}/${w.total} slots done</div></div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;background:${barColor};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${w.pct}%</div>
+            <button class="hist-delete-btn" onclick="deleteHistEntry(${w.id})">🗑</button>
+          </div>
+        </div>
+        <div class="hist-bar-track"><div class="hist-bar-fill" style="width:${w.pct}%;background:${barColor}"></div></div>
+        ${notesHtml}
+      </div>`;
+    }).join('');
+  }
+
+  function toggleNotes(id) {
+    const el = document.getElementById('hist-notes-' + id);
+    if (el) el.style.display = el.style.display === 'flex' ? 'none' : 'flex';
+  }
+</script>
+</body>
+</html>
