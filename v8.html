@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>GCSE Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & BASE ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0d0d18;
+  --glass: rgba(18,18,32,0.88);
+  --card: rgba(22,22,38,0.95);
+  --card2: rgba(28,28,48,0.9);
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #f0f0fa;
+  --text2: #a0a0c0;
+  --text3: #606080;
+  --accent: #7c6af7;
+  --accent2: #f472b6;
+  --green: #4ecdc4;
+  --yellow: #f7c948;
+  --r: 14px;
+  --r2: 10px;
+}
+body {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.bg-layer {
+  position: fixed; inset: 0; z-index: 0;
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+  transition: opacity 0.4s;
+}
+.bg-overlay {
+  position: fixed; inset: 0; z-index: 1;
+  background: var(--bg);
+  transition: opacity 0.4s;
+}
+#root { position: relative; z-index: 2; }
+
+/* ─── ANIMATIONS ────────────────────────────────────── */
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
+@keyframes scaleIn { from { opacity:0; transform:scale(0.93); } to { opacity:1; transform:scale(1); } }
+@keyframes slideRight { from { transform:translateX(100%); } to { transform:translateX(0); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── TOPBAR ─────────────────────────────────────────── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--glass);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  padding: 0 20px; height: 60px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.logo {
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #a89cf7 0%, #f472b6 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; flex-shrink: 0;
+}
+.week-nav { display: flex; align-items: center; gap: 6px; }
+.wnbtn {
+  background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 13px; cursor: pointer;
+  font-size: 16px; font-weight: 600; color: var(--text2);
+  font-family: 'Outfit', sans-serif; transition: all 0.15s; line-height: 1;
+}
+.wnbtn:hover { background: rgba(124,106,247,0.15); border-color: var(--accent); color: var(--accent); }
+.wnbtn:disabled { opacity: 0.25; cursor: default; pointer-events: none; }
+.week-label {
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+  color: var(--text); min-width: 100px; text-align: center;
+}
+.top-right { display: flex; align-items: center; gap: 8px; }
+.icon-btn {
+  background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+  border-radius: 9px; padding: 7px 13px; cursor: pointer;
+  font-size: 14px; font-weight: 500; color: var(--text2);
+  font-family: 'Outfit', sans-serif; transition: all 0.15s; display: flex; align-items: center; gap: 6px;
+}
+.icon-btn:hover { border-color: var(--accent); color: var(--text); background: rgba(124,106,247,0.1); }
+.avatar-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: 2px solid transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: #fff;
+  transition: border-color 0.15s; overflow: hidden; flex-shrink: 0;
+}
+.avatar-btn:hover { border-color: rgba(255,255,255,0.4); }
+.avatar-btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+/* ─── MAIN CONTENT ───────────────────────────────────── */
+.main { padding: 20px 18px 100px; max-width: 1200px; margin: 0 auto; }
+
+/* ─── UNDO TOAST ─────────────────────────────────────── */
+.toast-container {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  background: #222236; border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px; padding: 12px 16px;
+  display: flex; align-items: center; gap: 12px;
+  font-size: 13px; font-weight: 500; color: var(--text);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  pointer-events: all; white-space: nowrap;
+  animation: toastIn 0.22s cubic-bezier(0.34,1.56,0.64,1) both;
+  min-width: 240px;
+}
+.toast.removing { animation: toastOut 0.2s ease both; }
+@keyframes toastIn  { from { opacity:0; transform:translateY(16px) scale(.95); } to { opacity:1; transform:none; } }
+@keyframes toastOut { from { opacity:1; transform:none; } to { opacity:0; transform:translateY(8px) scale(.97); } }
+.toast-msg { flex: 1; }
+.toast-undo {
+  background: var(--accent); color: #fff; border: none;
+  border-radius: 7px; padding: 5px 11px; font-size: 12px; font-weight: 700;
+  cursor: pointer; font-family: 'Outfit', sans-serif; transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+.toast-undo:hover { opacity: 0.85; }
+.toast-bar {
+  position: absolute; bottom: 0; left: 0; height: 2px;
+  background: var(--accent); border-radius: 0 0 12px 12px;
+  transition: width linear;
+}
+
+/* ─── GMT CLOCK ──────────────────────────────────────── */
+.clock-wrap {
+  display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0;
+}
+.clock-time {
+  font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800;
+  letter-spacing: 0.04em; color: var(--text); line-height: 1;
+}
+.clock-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text3); margin-top: 2px;
+}
+@media (max-width: 480px) { .clock-time { font-size: 14px; } }
+
+/* ─── NEXT UP CARD ───────────────────────────────────── */
+.next-up-card {
+  border-radius: var(--r); padding: 14px 18px; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 14px;
+  border: 1px solid var(--border); background: var(--card);
+  animation: fadeUp 0.3s ease 0.05s both;
+}
+.next-up-left { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.next-up-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text3);
+}
+.next-up-title {
+  font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800;
+  color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.next-up-meta { font-size: 12px; color: var(--text2); margin-top: 1px; }
+.next-up-countdown {
+  flex-shrink: 0; text-align: right;
+  font-family: 'Syne', sans-serif;
+}
+.countdown-num {
+  font-size: 22px; font-weight: 800; line-height: 1;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.countdown-label { font-size: 10px; color: var(--text3); font-weight: 600; margin-top: 2px; letter-spacing: 0.05em; }
+.next-up-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.next-up-now {
+  background: rgba(78,205,196,0.12); border-color: rgba(78,205,196,0.3);
+}
+.now-badge {
+  background: rgba(78,205,196,0.15); border: 1px solid rgba(78,205,196,0.3);
+  color: #4ecdc4; font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 6px;
+  animation: livepulse 1.6s ease-in-out infinite; flex-shrink: 0;
+}
+
+/* ─── PROGRESS CARD ─────────────────────────────────── */
+.prog-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 14px 20px; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 16px;
+  animation: fadeUp 0.3s ease both;
+}
+.prog-label { font-size: 13px; color: var(--text2); font-weight: 500; white-space: nowrap; }
+.prog-label strong { color: var(--text); font-weight: 700; }
+.prog-track {
+  flex: 1; height: 7px; background: rgba(255,255,255,0.07);
+  border-radius: 99px; overflow: hidden;
+}
+.prog-fill {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1);
+}
+.prog-pct {
+  font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  min-width: 42px; text-align: right;
+}
+
+/* ─── PAST BANNER ───────────────────────────────────── */
+.past-banner {
+  background: rgba(247,156,72,0.1); border: 1px solid rgba(247,156,72,0.25);
+  border-radius: var(--r2); padding: 10px 16px; margin-bottom: 14px;
+  font-size: 13px; font-weight: 500; color: #f79c48;
+}
+
+/* ─── DAYS GRID ─────────────────────────────────────── */
+.days-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 10px; margin-bottom: 16px;
+}
+@media (max-width: 900px) { .days-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 580px) { .days-grid { grid-template-columns: 1fr 1fr; } }
+
+.day-col { display: flex; flex-direction: column; }
+.day-header {
+  background: var(--card2); border: 1px solid var(--border); border-bottom: none;
+  border-radius: var(--r) var(--r) 0 0; padding: 9px 10px; text-align: center;
+  transition: background 0.2s;
+}
+.day-header.is-today {
+  background: rgba(124,106,247,0.12);
+  border-color: rgba(124,106,247,0.3);
+}
+.day-header.is-today .day-name { color: var(--accent); }
+.day-header.is-today .day-date { color: var(--accent); opacity: 0.85; }
+.day-name {
+  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3);
+  line-height: 1;
+}
+.day-date {
+  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700;
+  color: var(--text2); margin-top: 3px; line-height: 1;
+}
+.day-date-sub {
+  font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 400;
+  color: var(--text3); margin-top: 1px; line-height: 1;
+}
+.day-body {
+  background: var(--card); border: 1px solid var(--border);
+  border-top: 2px solid var(--border2);
+  border-radius: 0 0 var(--r) var(--r);
+  padding: 8px; display: flex; flex-direction: column; gap: 7px;
+  flex: 1; min-height: 180px;
+}
+
+/* ─── SLOT CARDS ─────────────────────────────────────── */
+.slot-card {
+  border-radius: var(--r2); padding: 10px 11px 9px;
+  cursor: pointer; position: relative; overflow: hidden;
+  border: 1.5px solid transparent;
+  transition: transform 0.13s ease, box-shadow 0.13s ease;
+}
+.slot-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.35); }
+.slot-card:active { transform: scale(0.97); }
+.slot-card.is-done { opacity: 0.38; filter: saturate(0.12); }
+.slot-card.is-done .slot-name { text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.slot-card.is-past { cursor: default; }
+.slot-card.is-past:hover { transform: none; box-shadow: none; }
+.slot-accent-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 3.5px; border-radius: 3px 0 0 3px; }
+.slot-tick {
+  position: absolute; top: 8px; right: 8px;
+  width: 17px; height: 17px; border-radius: 50%;
+  border: 1.5px solid currentColor; opacity: 0.25;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700; transition: all 0.2s;
+}
+.slot-card.is-done .slot-tick { opacity: 1; background: currentColor; color: #0d0d18; }
+.slot-name {
+  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
+  padding-left: 8px; line-height: 1.3; padding-right: 22px;
+}
+.slot-time { font-size: 11px; padding-left: 8px; opacity: 0.55; margin-top: 2px; }
+.slot-tag {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 4px; margin-top: 5px; margin-left: 8px;
+}
+.slot-note-preview {
+  font-size: 10px; padding-left: 8px; opacity: 0.5;
+  margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* Live lesson vs revision distinction */
+.slot-card.is-lesson { border-left-width: 4px; }
+.live-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 9px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 2px 8px 2px 5px; border-radius: 4px; margin-top: 5px; margin-left: 8px;
+  background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9);
+}
+.live-dot {
+  width: 5px; height: 5px; border-radius: 50%; background: #fff; flex-shrink: 0;
+  animation: livepulse 1.6s ease-in-out infinite;
+}
+@keyframes livepulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.35;transform:scale(0.65)} }
+.revision-badge {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 4px; margin-top: 5px; margin-left: 8px;
+}
+.add-slot-btn {
+  border-radius: var(--r2); padding: 10px;
+  cursor: pointer; border: 1.5px dashed rgba(124,106,247,0.3);
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  color: var(--accent); font-size: 13px; font-weight: 600;
+  opacity: 0.5; min-height: 50px; transition: all 0.15s;
+  font-family: 'Outfit', sans-serif;
+}
+.add-slot-btn:hover { opacity: 1; border-color: var(--accent); background: rgba(124,106,247,0.07); transform: translateY(-1px); }
+
+/* ─── ACTIONS ROW ───────────────────────────────────── */
+.actions-row {
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 24px;
+}
+.week-name-input {
+  flex: 1; min-width: 180px; padding: 11px 14px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r2); color: var(--text); font-size: 14px;
+  font-family: 'Outfit', sans-serif; outline: none; transition: border-color 0.15s;
+}
+.week-name-input:focus { border-color: var(--accent); }
+.week-name-input::placeholder { color: var(--text3); }
+
+/* ─── BUTTONS ────────────────────────────────────────── */
+.btn {
+  border-radius: var(--r2); padding: 10px 18px; font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: 'Outfit', sans-serif;
+  transition: all 0.15s; border: none; white-space: nowrap; display: inline-flex;
+  align-items: center; gap: 6px;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #9f8fff); color: #fff;
+}
+.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn-ghost {
+  background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+  color: var(--text2);
+}
+.btn-ghost:hover { border-color: var(--accent2); color: var(--accent2); background: rgba(244,114,182,0.07); }
+.btn-danger {
+  background: rgba(247,106,140,0.1); border: 1px solid rgba(247,106,140,0.25); color: #f76a8c;
+}
+.btn-danger:hover { background: rgba(247,106,140,0.2); }
+.btn-full { width: 100%; justify-content: center; }
+
+/* ─── HISTORY ────────────────────────────────────────── */
+.history-section { margin-top: 8px; }
+.section-title {
+  font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700;
+  color: var(--text); margin-bottom: 12px;
+}
+.history-list { display: flex; flex-direction: column; gap: 8px; }
+.history-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 14px 16px;
+}
+.history-card-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 10px; margin-bottom: 8px;
+}
+.history-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); }
+.history-meta { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.history-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.history-pct {
+  font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.history-bar-track { height: 4px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; }
+.history-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+.small-btn {
+  background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+  border-radius: 7px; padding: 4px 11px; font-size: 12px; font-weight: 600;
+  color: var(--text2); cursor: pointer; font-family: 'Outfit', sans-serif; transition: all 0.15s;
+}
+.small-btn:hover { border-color: var(--accent); color: var(--accent); }
+.del-btn {
+  background: none; border: none; color: var(--text3); cursor: pointer;
+  font-size: 15px; padding: 3px 6px; border-radius: 5px; transition: color 0.15s;
+}
+.del-btn:hover { color: #f76a8c; }
+
+/* ─── MODAL OVERLAY ─────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+}
+.modal-box {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 18px; padding: 26px; width: min(460px, 100%);
+  max-height: 90vh; overflow-y: auto; position: relative;
+  animation: scaleIn 0.18s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.modal-close-btn {
+  position: absolute; top: 14px; right: 16px;
+  background: rgba(255,255,255,0.07); border: 1px solid var(--border);
+  border-radius: 8px; width: 32px; height: 32px;
+  cursor: pointer; color: var(--text2); font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.modal-close-btn:hover { background: rgba(247,106,140,0.15); border-color: #f76a8c; color: #f76a8c; }
+.modal-title {
+  font-family: 'Syne', sans-serif; font-size: 19px; font-weight: 800;
+  color: var(--text); margin-bottom: 4px; padding-right: 40px;
+}
+.modal-subtitle { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
+
+/* ─── FORM ELEMENTS ─────────────────────────────────── */
+.form-group { margin-bottom: 14px; }
+.form-label {
+  display: block; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 6px;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 11px 13px;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border2);
+  border-radius: var(--r2); color: var(--text); font-size: 14px;
+  font-family: 'Outfit', sans-serif; outline: none; transition: border-color 0.15s;
+  -webkit-appearance: none; appearance: none;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); background: rgba(255,255,255,0.07); }
+.form-input::placeholder { color: var(--text3); }
+.form-textarea { resize: vertical; min-height: 85px; line-height: 1.55; }
+.form-select option { background: #181828; }
+.modal-btns { display: flex; gap: 9px; margin-top: 18px; }
+.modal-btns .btn { flex: 1; }
+
+/* DONE TOGGLE */
+.done-toggle-btn {
+  width: 100%; padding: 11px 14px; border-radius: var(--r2); cursor: pointer;
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+  letter-spacing: 0.04em; text-transform: uppercase; transition: all 0.15s;
+  border: 1.5px solid; margin-bottom: 14px;
+}
+.done-off { background: rgba(124,106,247,0.08); color: var(--accent); border-color: rgba(124,106,247,0.25); }
+.done-on  { background: rgba(78,205,196,0.12); color: #4ecdc4; border-color: rgba(78,205,196,0.3); }
+
+/* ─── COLOUR SWATCHES ───────────────────────────────── */
+.swatch-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.swatch {
+  width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+  border: 2.5px solid transparent; transition: transform 0.12s;
+  flex-shrink: 0;
+}
+.swatch:hover { transform: scale(1.18); }
+.swatch.active { border-color: #fff; transform: scale(1.22); }
+
+/* ─── SETTINGS PANEL ────────────────────────────────── */
+.settings-wrap { position: fixed; inset: 0; z-index: 400; display: flex; justify-content: flex-end; }
+.settings-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.55); }
+.settings-panel {
+  position: relative; z-index: 1; width: min(340px, 95vw);
+  background: var(--card); border-left: 1px solid var(--border2);
+  height: 100%; overflow-y: auto; padding: 24px;
+  animation: slideRight 0.2s ease-out both;
+}
+.settings-header {
+  font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800;
+  color: var(--text); padding-bottom: 16px; border-bottom: 1px solid var(--border);
+  margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;
+}
+.settings-section { margin-bottom: 24px; }
+.settings-section-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text3); margin-bottom: 12px;
+}
+
+/* THEME GRID */
+.theme-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.theme-tile {
+  border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 6px;
+  cursor: pointer; text-align: center; background: transparent; transition: all 0.15s;
+}
+.theme-tile:hover { border-color: var(--accent); }
+.theme-tile.active { border-color: var(--accent); background: rgba(124,106,247,0.1); }
+.theme-preview { height: 22px; border-radius: 5px; margin-bottom: 5px; }
+.theme-name { font-size: 11px; font-weight: 600; color: var(--text); }
+
+/* SUBJECT LIST */
+.subject-list { display: flex; flex-direction: column; gap: 6px; }
+.subject-row {
+  display: flex; align-items: center; gap: 9px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  border-radius: var(--r2); padding: 9px 11px;
+}
+.subject-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.subject-name { flex: 1; font-size: 13px; color: var(--text); font-weight: 500; }
+.subject-tool { font-size: 11px; color: var(--text3); }
+.subject-del {
+  background: none; border: none; color: var(--text3); cursor: pointer;
+  font-size: 14px; padding: 2px 5px; border-radius: 4px; transition: color 0.15s;
+}
+.subject-del:hover { color: #f76a8c; }
+.add-subject-row { display: flex; gap: 6px; margin-top: 9px; align-items: center; }
+.add-subject-row .form-input { margin-bottom: 0; font-size: 13px; padding: 8px 11px; }
+
+/* BACKGROUND OPTIONS */
+.bg-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.bg-option {
+  border: 1.5px solid var(--border); border-radius: var(--r2); padding: 10px 8px;
+  cursor: pointer; text-align: center; background: transparent; transition: all 0.15s;
+}
+.bg-option:hover { border-color: var(--accent); }
+.bg-option.active { border-color: var(--accent); background: rgba(124,106,247,0.1); }
+.bg-option-icon { font-size: 20px; margin-bottom: 4px; }
+.bg-option-label { font-size: 11px; font-weight: 600; color: var(--text); }
+.color-picker-row {
+  display: flex; gap: 7px; flex-wrap: wrap; align-items: center; margin-top: 8px;
+}
+.color-swatch {
+  width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+  border: 2.5px solid transparent; transition: transform 0.12s;
+  flex-shrink: 0;
+}
+.color-swatch:hover { transform: scale(1.18); }
+.color-swatch.active { border-color: #fff; transform: scale(1.22); }
+.upload-photo-btn {
+  width: 100%; padding: 12px; border-radius: var(--r2);
+  border: 1.5px dashed rgba(124,106,247,0.35); background: rgba(124,106,247,0.05);
+  color: var(--accent); font-size: 13px; font-weight: 600; cursor: pointer;
+  font-family: 'Outfit', sans-serif; transition: all 0.15s; text-align: center;
+}
+.upload-photo-btn:hover { border-color: var(--accent); background: rgba(124,106,247,0.1); }
+#photo-input { display: none; }
+
+/* ─── SYNC MODAL ────────────────────────────────────── */
+.code-display {
+  background: rgba(0,0,0,0.3); border: 1px solid var(--border2);
+  border-radius: var(--r2); padding: 12px; font-family: monospace;
+  font-size: 11px; word-break: break-all; color: var(--text2);
+  max-height: 100px; overflow-y: auto; margin-bottom: 10px; line-height: 1.5;
+}
+.info-box {
+  background: rgba(78,205,196,0.08); border: 1px solid rgba(78,205,196,0.2);
+  border-radius: var(--r2); padding: 11px 14px;
+  font-size: 13px; color: #4ecdc4; line-height: 1.6; margin-bottom: 16px;
+}
+
+/* ─── LOGIN SCREEN ──────────────────────────────────── */
+.login-screen {
+  min-height: 100vh; display: flex; align-items: center;
+  justify-content: center; padding: 24px; background: var(--bg);
+}
+.login-card {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 20px; padding: 44px 36px; text-align: center;
+  width: min(400px, 100%); animation: fadeUp 0.4s ease both;
+}
+.login-logo {
+  font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800;
+  letter-spacing: -1px; margin-bottom: 8px;
+  background: linear-gradient(135deg, #a89cf7, #f472b6);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.login-tagline { font-size: 15px; color: var(--text2); margin-bottom: 34px; line-height: 1.6; font-weight: 300; }
+.login-name-field { margin-bottom: 14px; text-align: left; }
+.login-note { font-size: 12px; color: var(--text3); margin-top: 14px; line-height: 1.6; }
+.user-chip {
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  border-radius: var(--r2); padding: 10px 14px; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all 0.15s;
+}
+.user-chip:hover { border-color: var(--accent); background: rgba(124,106,247,0.08); }
+.user-chip-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.user-chip-name { font-size: 14px; font-weight: 600; color: var(--text); flex: 1; text-align: left; }
+.user-chip-check { color: var(--accent); font-size: 16px; }
+.divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+.divider-line { flex: 1; height: 1px; background: var(--border); }
+.divider-text { font-size: 12px; color: var(--text3); white-space: nowrap; }
+
+/* ─── LOADER ────────────────────────────────────────── */
+.loader {
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 14px; background: var(--bg);
+}
+.spinner {
+  width: 32px; height: 32px;
+  border: 3px solid rgba(255,255,255,0.08);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+</style>
+</head>
+<body>
+<div class="bg-layer" id="bgLayer"></div>
+<div class="bg-overlay" id="bgOverlay"></div>
+<div id="root"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA & CONSTANTS
+// ═══════════════════════════════════════════════════════
+
+const COLOURS = [
+  {id:'purple',hex:'#7c6af7',bg:'rgba(124,106,247,.14)',border:'rgba(124,106,247,.3)',tag:'rgba(124,106,247,.2)'},
+  {id:'teal',  hex:'#4ecdc4',bg:'rgba(78,205,196,.13)', border:'rgba(78,205,196,.28)',tag:'rgba(78,205,196,.2)'},
+  {id:'yellow',hex:'#f7c948',bg:'rgba(247,201,72,.13)', border:'rgba(247,201,72,.28)',tag:'rgba(247,201,72,.2)'},
+  {id:'pink',  hex:'#f76a8c',bg:'rgba(247,106,140,.13)',border:'rgba(247,106,140,.28)',tag:'rgba(247,106,140,.2)'},
+  {id:'green', hex:'#6af7b4',bg:'rgba(106,247,180,.12)',border:'rgba(106,247,180,.25)',tag:'rgba(106,247,180,.18)'},
+  {id:'violet',hex:'#c96af7',bg:'rgba(201,106,247,.13)',border:'rgba(201,106,247,.25)',tag:'rgba(201,106,247,.2)'},
+  {id:'orange',hex:'#f79c48',bg:'rgba(247,156,72,.13)', border:'rgba(247,156,72,.28)',tag:'rgba(247,156,72,.2)'},
+  {id:'blue',  hex:'#48a9f7',bg:'rgba(72,169,247,.13)', border:'rgba(72,169,247,.28)',tag:'rgba(72,169,247,.2)'},
+];
+const getColour = id => COLOURS.find(c=>c.id===id) || COLOURS[0];
+
+const THEMES = [
+  {id:'dark',    name:'Dark',    bg:'#0d0d18', overlay:'rgba(13,13,24,0.92)'},
+  {id:'midnight',name:'Midnight',bg:'#060612', overlay:'rgba(6,6,18,0.94)'},
+  {id:'slate',   name:'Slate',   bg:'#0e1020', overlay:'rgba(14,16,32,0.92)'},
+  {id:'forest',  name:'Forest',  bg:'#090e0c', overlay:'rgba(9,14,12,0.92)'},
+  {id:'rose',    name:'Rose',    bg:'#110810', overlay:'rgba(17,8,16,0.92)'},
+  {id:'ocean',   name:'Ocean',   bg:'#070c18', overlay:'rgba(7,12,24,0.92)'},
+];
+
+const BG_COLOURS = [
+  {hex:'#0d0d18'},{hex:'#0e1020'},{hex:'#090e0c'},
+  {hex:'#110810'},{hex:'#070c18'},{hex:'#1a0e0e'},
+  {hex:'#0e0e0e'},{hex:'#0d1414'},
+];
+
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+const DAYS_SHORT = ['Mon','Tue','Wed','Thu','Fri'];
+
+const DEFAULT_SUBJECTS = [
+  // ── ONLINE LESSONS (isLesson: true) ──
+  {id:'sci', name:'KS4 Science',  colour:'teal',   tool:'Tassomai after',      tag:'Live lesson', isLesson:true},
+  {id:'mth', name:'KS4 Maths',    colour:'yellow', tool:'Dr Frost after',      tag:'Live lesson', isLesson:true},
+  {id:'eng', name:'Yr10 English', colour:'pink',   tool:'Notes after',         tag:'Live lesson', isLesson:true},
+  {id:'elc', name:'ELAC',         colour:'blue',   tool:'Online lesson',       tag:'Live lesson', isLesson:true},
+  // ── REVISION (isLesson: false) ──
+  {id:'rev_sci', name:'Science Revision',  colour:'teal',   tool:'Tassomai · 20 mins',  tag:'Revision', isLesson:false},
+  {id:'rev_mth', name:'Maths Revision',    colour:'yellow', tool:'Dr Frost practice',   tag:'Revision', isLesson:false},
+  {id:'rev_eng', name:'English Revision',  colour:'pink',   tool:'Past papers / notes', tag:'Revision', isLesson:false},
+  {id:'ger',     name:'German',            colour:'green',  tool:'Duolingo + Lang Nut', tag:'Revision', isLesson:false},
+  {id:'re',      name:'RE',                colour:'violet', tool:'Oak Academy',         tag:'Revision', isLesson:false},
+  {id:'fre',     name:'Free Study',        colour:'purple', tool:'Self-led revision',   tag:'Revision', isLesson:false},
+];
+
+// ── TIMETABLE ──────────────────────────────────────────────────────────────
+// Each slot has type: 'lesson' (online class) or 'revision' (self-study)
+const DEFAULT_SLOTS = [
+
+  // ══ MONDAY ══
+  // Online lessons
+  {id:'m1', day:0, time:'9:45',  subject:'sci', note:'', done:false, type:'lesson'},
+  {id:'m2', day:0, time:'11:00', subject:'mth', note:'', done:false, type:'lesson'},
+  {id:'m3', day:0, time:'11:45', subject:'eng', note:'', done:false, type:'lesson'},
+  // Revision after lessons
+  {id:'m4', day:0, time:'10:30', subject:'rev_sci', note:'', done:false, type:'revision'},
+  {id:'m5', day:0, time:'13:00', subject:'ger',     note:'', done:false, type:'revision'},
+  {id:'m6', day:0, time:'14:00', subject:'rev_mth', note:'', done:false, type:'revision'},
+
+  // ══ TUESDAY ══
+  // Online lessons
+  {id:'t1', day:1, time:'11:00', subject:'eng', note:'', done:false, type:'lesson'},
+  {id:'t2', day:1, time:'14:15', subject:'elc', note:'', done:false, type:'lesson'},
+  // Revision
+  {id:'t3', day:1, time:'9:00',  subject:'rev_sci', note:'', done:false, type:'revision'},
+  {id:'t4', day:1, time:'12:00', subject:'re',      note:'', done:false, type:'revision'},
+  {id:'t5', day:1, time:'13:00', subject:'rev_eng', note:'', done:false, type:'revision'},
+
+  // ══ WEDNESDAY ══
+  // Online lessons
+  {id:'w1', day:2, time:'9:00',  subject:'sci', note:'', done:false, type:'lesson'},
+  {id:'w2', day:2, time:'11:00', subject:'eng', note:'', done:false, type:'lesson'},
+  {id:'w3', day:2, time:'11:45', subject:'mth', note:'', done:false, type:'lesson'},
+  // Revision
+  {id:'w4', day:2, time:'9:45',  subject:'rev_sci', note:'', done:false, type:'revision'},
+  {id:'w5', day:2, time:'13:00', subject:'ger',     note:'', done:false, type:'revision'},
+  {id:'w6', day:2, time:'14:00', subject:'fre',     note:'', done:false, type:'revision'},
+
+  // ══ THURSDAY ══
+  // Online lessons
+  {id:'th1', day:3, time:'9:00',  subject:'sci', note:'', done:false, type:'lesson'},
+  {id:'th2', day:3, time:'9:45',  subject:'eng', note:'', done:false, type:'lesson'},
+  {id:'th3', day:3, time:'11:00', subject:'eng', note:'', done:false, type:'lesson'},
+  {id:'th4', day:3, time:'11:45', subject:'mth', note:'', done:false, type:'lesson'},
+  {id:'th5', day:3, time:'14:15', subject:'elc', note:'', done:false, type:'lesson'},
+  // Revision
+  {id:'th6', day:3, time:'13:00', subject:'re',      note:'', done:false, type:'revision'},
+  {id:'th7', day:3, time:'13:30', subject:'rev_mth', note:'', done:false, type:'revision'},
+
+  // ══ FRIDAY ══
+  // Online lessons
+  {id:'f1', day:4, time:'11:45', subject:'eng', note:'', done:false, type:'lesson'},
+  {id:'f2', day:4, time:'14:15', subject:'elc', note:'', done:false, type:'lesson'},
+  // Revision
+  {id:'f3', day:4, time:'9:00',  subject:'rev_sci', note:'', done:false, type:'revision'},
+  {id:'f4', day:4, time:'10:00', subject:'ger',     note:'', done:false, type:'revision'},
+  {id:'f5', day:4, time:'13:00', subject:'fre',     note:'', done:false, type:'revision'},
+];
+
+const uid = () => 'u'+Math.random().toString(36).slice(2)+Date.now().toString(36);
+
+// ═══════════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════════
+
+function loadUserData(username) {
+  try {
+    const raw = localStorage.getItem('gcse_' + username);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch { return null; }
+}
+
+function saveUserData(username, data) {
+  try {
+    localStorage.setItem('gcse_' + username, JSON.stringify(data));
+  } catch(e) { console.error('Save failed:', e); }
+}
+
+function getKnownUsers() {
+  try {
+    return JSON.parse(localStorage.getItem('gcse_users') || '[]');
+  } catch { return []; }
+}
+
+function addKnownUser(username) {
+  const users = getKnownUsers();
+  if (!users.includes(username)) {
+    users.unshift(username);
+    localStorage.setItem('gcse_users', JSON.stringify(users.slice(0, 5)));
+  }
+}
+
+function loadBgImage() {
+  try { return localStorage.getItem('gcse_bg_image') || null; } catch { return null; }
+}
+function saveBgImage(base64) {
+  try { if (base64) localStorage.setItem('gcse_bg_image', base64); else localStorage.removeItem('gcse_bg_image'); } catch {}
+}
+
+function getDefaultData() {
+  return {
+    slots: DEFAULT_SLOTS.map(s => ({...s})),
+    subjects: DEFAULT_SUBJECTS.map(s => ({...s})),
+    history: [],
+    theme: 'dark',
+    weekLabel: '',
+    bgType: 'solid',    // 'solid' | 'photo'
+    bgColour: '#0d0d18',
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+
+let STATE = {
+  screen: 'login',
+  username: null,
+  weekOffset: 0,
+  modal: null,
+  showSettings: false,
+  data: getDefaultData(),
+  bgImageData: null,
+  undoStack: [],   // array of { snapshot, label }
+};
+
+// Push current data to undo stack before a destructive action
+function pushUndo(label) {
+  STATE.undoStack.push({ snapshot: JSON.parse(JSON.stringify(STATE.data)), label });
+  if (STATE.undoStack.length > 20) STATE.undoStack.shift(); // cap at 20
+}
+
+function doUndo() {
+  const entry = STATE.undoStack.pop();
+  if (!entry) return;
+  STATE.data = entry.snapshot;
+  if (STATE.username) saveUserData(STATE.username, STATE.data);
+  render();
+  showToast(`↩ Undone: ${entry.label}`, null);
+}
+
+function setData(patch, save = true) {
+  Object.assign(STATE.data, patch);
+  if (save && STATE.username) saveUserData(STATE.username, STATE.data);
+  render();
+}
+
+function setState(patch) {
+  Object.assign(STATE, patch);
+  render();
+}
+
+function openModal(modal) { setState({ modal }); }
+function closeModal() { setState({ modal: null }); }
+
+// ═══════════════════════════════════════════════════════
+// BACKGROUND
+// ═══════════════════════════════════════════════════════
+
+function applyBackground() {
+  const bgLayer = document.getElementById('bgLayer');
+  const bgOverlay = document.getElementById('bgOverlay');
+  if (!bgLayer || !bgOverlay) return;
+
+  const d = STATE.data;
+  const theme = THEMES.find(t => t.id === d.theme) || THEMES[0];
+
+  if (d.bgType === 'photo' && STATE.bgImageData) {
+    bgLayer.style.backgroundImage = `url(${STATE.bgImageData})`;
+    bgLayer.style.opacity = '1';
+    bgOverlay.style.background = 'rgba(0,0,0,0.55)';
+    document.documentElement.style.setProperty('--bg', 'transparent');
+  } else {
+    bgLayer.style.backgroundImage = 'none';
+    bgLayer.style.opacity = '0';
+    const col = d.bgColour || theme.bg;
+    bgOverlay.style.background = col;
+    document.documentElement.style.setProperty('--bg', col);
+  }
+}
+
+function compressAndSetImage(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const MAX = 1200;
+      const ratio = Math.min(MAX / img.width, MAX / img.height, 1);
+      canvas.width = img.width * ratio;
+      canvas.height = img.height * ratio;
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      const compressed = canvas.toDataURL('image/jpeg', 0.65);
+      STATE.bgImageData = compressed;
+      saveBgImage(compressed);
+      setData({ bgType: 'photo' });
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER HELPERS
+// ═══════════════════════════════════════════════════════
+
+function el(tag, className = '') {
+  const d = document.createElement(tag);
+  if (className) d.className = className;
+  return d;
+}
+
+function btn(text, classes, onClick) {
+  const b = el('button', 'btn ' + classes);
+  b.textContent = text;
+  b.addEventListener('click', onClick);
+  return b;
+}
+
+function formGroup(labelText, inputEl) {
+  const g = el('div', 'form-group');
+  const l = el('label', 'form-label');
+  l.textContent = labelText;
+  g.appendChild(l);
+  g.appendChild(inputEl);
+  return g;
+}
+
+// ═══════════════════════════════════════════════════════
+// LOGIN SCREEN
+// ═══════════════════════════════════════════════════════
+
+function renderLogin() {
+  const wrap = el('div', 'login-screen');
+  const card = el('div', 'login-card');
+
+  const logo = el('div', 'login-logo'); logo.textContent = 'GCSE Planner';
+  const tag = el('p', 'login-tagline'); tag.textContent = 'Track your lessons, notes and progress.';
+  card.appendChild(logo);
+  card.appendChild(tag);
+
+  const knownUsers = getKnownUsers();
+
+  if (knownUsers.length > 0) {
+    const welcomeLabel = el('div', 'form-label');
+    welcomeLabel.textContent = 'Welcome back';
+    welcomeLabel.style.textAlign = 'left';
+    card.appendChild(welcomeLabel);
+
+    knownUsers.forEach(name => {
+      const chip = el('div', 'user-chip');
+      const av = el('div', 'user-chip-avatar');
+      av.textContent = name.slice(0,2).toUpperCase();
+      const nm = el('div', 'user-chip-name'); nm.textContent = name;
+      const chk = el('div', 'user-chip-check'); chk.textContent = '→';
+      chip.appendChild(av); chip.appendChild(nm); chip.appendChild(chk);
+      chip.addEventListener('click', () => doLogin(name));
+      card.appendChild(chip);
+    });
+
+    const div = el('div', 'divider');
+    const l1 = el('div', 'divider-line');
+    const dt = el('div', 'divider-text'); dt.textContent = 'or sign in as someone new';
+    const l2 = el('div', 'divider-line');
+    div.appendChild(l1); div.appendChild(dt); div.appendChild(l2);
+    card.appendChild(div);
+  }
+
+  const nameInput = el('input', 'form-input');
+  nameInput.placeholder = 'Enter your name…';
+  nameInput.autocomplete = 'off';
+  card.appendChild(formGroup('Your name', nameInput));
+
+  const signInBtn = btn('Start ›', 'btn-primary btn-full', () => {
+    const name = nameInput.value.trim();
+    if (!name) { nameInput.style.borderColor = '#f76a8c'; nameInput.focus(); return; }
+    doLogin(name);
+  });
+  nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') signInBtn.click(); });
+  card.appendChild(signInBtn);
+
+  const note = el('p', 'login-note');
+  note.textContent = 'Your name is stored in your browser. Anyone using this device can access the app — no password needed.';
+  card.appendChild(note);
+
+  wrap.appendChild(card);
+  return wrap;
+}
+
+function doLogin(username) {
+  addKnownUser(username);
+  const saved = loadUserData(username);
+  const data = saved || getDefaultData();
+  STATE.bgImageData = loadBgImage();
+  STATE.username = username;
+  STATE.data = data;
+  STATE.screen = 'app';
+  render();
+}
+
+// ═══════════════════════════════════════════════════════
+// TOPBAR
+// ═══════════════════════════════════════════════════════
+
+function renderTopbar() {
+  const isPast = STATE.weekOffset < 0;
+  const wLabel = STATE.weekOffset === 0 ? 'This week' :
+    STATE.weekOffset < 0 ? `${Math.abs(STATE.weekOffset)}w ago` : `+${STATE.weekOffset}w`;
+
+  const bar = el('div', 'topbar');
+
+  // Left: logo + week nav
+  const left = el('div'); left.style.cssText = 'display:flex;align-items:center;gap:12px;min-width:0';
+  const logo = el('div', 'logo'); logo.textContent = 'GCSE';
+  const nav = el('div', 'week-nav');
+  const prevBtn = el('button', 'wnbtn'); prevBtn.textContent = '‹';
+  prevBtn.addEventListener('click', () => setState({ weekOffset: STATE.weekOffset - 1, modal: null }));
+  const wl = el('span', 'week-label'); wl.textContent = wLabel;
+  const nextBtn = el('button', 'wnbtn'); nextBtn.textContent = '›';
+  if (!isPast) nextBtn.disabled = true;
+  nextBtn.addEventListener('click', () => { if (isPast) setState({ weekOffset: STATE.weekOffset + 1, modal: null }); });
+  nav.appendChild(prevBtn); nav.appendChild(wl); nav.appendChild(nextBtn);
+  left.appendChild(logo); left.appendChild(nav);
+
+  // Right: clock, sync, settings, avatar
+  const right = el('div', 'top-right');
+
+  // Live GMT clock
+  const clockWrap = el('div', 'clock-wrap');
+  const clockTime = el('div', 'clock-time'); clockTime.id = 'live-clock';
+  const clockLabel = el('div', 'clock-label'); clockLabel.textContent = 'GMT';
+  clockWrap.appendChild(clockTime); clockWrap.appendChild(clockLabel);
+  updateClock(); // set immediately
+  right.appendChild(clockWrap);
+
+  const syncBtn = el('button', 'icon-btn'); syncBtn.textContent = '⇄ Sync';
+  syncBtn.addEventListener('click', () => openModal({ type: 'sync' }));
+
+  const undoBtn = el('button', 'icon-btn');
+  undoBtn.textContent = '↩';
+  undoBtn.title = 'Undo last action';
+  undoBtn.style.fontSize = '16px';
+  if (STATE.undoStack.length === 0) { undoBtn.style.opacity = '0.3'; undoBtn.style.cursor = 'default'; }
+  undoBtn.addEventListener('click', () => { if (STATE.undoStack.length > 0) doUndo(); });
+
+  const settBtn = el('button', 'icon-btn'); settBtn.textContent = '⚙';
+  settBtn.addEventListener('click', () => setState({ showSettings: true }));
+
+  const av = el('div', 'avatar-btn');
+  av.title = `Signed in as ${STATE.username} — click to switch`;
+  av.textContent = STATE.username.slice(0,2).toUpperCase();
+  av.addEventListener('click', () => {
+    if (confirm(`Sign out of "${STATE.username}"?`)) {
+      setState({ screen: 'login', username: null, weekOffset: 0, modal: null, showSettings: false });
+    }
+  });
+
+  right.appendChild(syncBtn); right.appendChild(undoBtn); right.appendChild(settBtn); right.appendChild(av);
+  bar.appendChild(left); bar.appendChild(right);
+  return bar;
+}
+
+// ═══════════════════════════════════════════════════════
+// MAIN
+// ═══════════════════════════════════════════════════════
+
+function renderMain() {
+  const isPast = STATE.weekOffset < 0;
+  const displaySlots = isPast
+    ? (STATE.data.history.find(h => h.offset === STATE.weekOffset)?.slots || [])
+    : STATE.data.slots;
+
+  const total = displaySlots.length;
+  const done = displaySlots.filter(s => s.done).length;
+  const pct = total ? Math.round(done / total * 100) : 0;
+
+  const main = el('div', 'main');
+
+  // Progress
+  const pc = el('div', 'prog-card');
+  pc.innerHTML = `
+    <div class="prog-label">Week: <strong>${done}/${total}</strong> done</div>
+    <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
+    <div class="prog-pct">${pct}%</div>`;
+  main.appendChild(pc);
+
+  // Next up card (current week only)
+  if (!isPast) {
+    const nextUp = buildNextUpCard();
+    if (nextUp) main.appendChild(nextUp);
+  }
+
+  // Legend
+  const legend = el('div');
+  legend.style.cssText = 'display:flex;gap:14px;align-items:center;margin-bottom:14px;flex-wrap:wrap;padding:0 2px';
+  legend.innerHTML = `
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--text2)">
+      <span style="display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.12);padding:3px 8px 3px 6px;border-radius:5px;color:rgba(255,255,255,0.85);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase">
+        <span style="width:5px;height:5px;border-radius:50%;background:#fff;animation:livepulse 1.6s ease-in-out infinite;display:inline-block"></span>
+        Live
+      </span>
+      Online lesson
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--text2)">
+      <span style="background:rgba(124,106,247,.2);color:#a89cf7;padding:3px 9px;border-radius:5px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase">Revision</span>
+      Self-study slot
+    </div>`;
+  main.appendChild(legend);
+
+  // Past banner
+  if (isPast) {
+    const he = STATE.data.history.find(h => h.offset === STATE.weekOffset);
+    const b = el('div', 'past-banner');
+    b.textContent = `📖 ${he?.label || 'Past week'} — read only. Use ‹ › to navigate.`;
+    main.appendChild(b);
+  }
+
+  // Days grid
+  const grid = el('div', 'days-grid');
+  const weekDates = getWeekDates(STATE.weekOffset);
+  DAYS.forEach((day, di) => {
+    const col = el('div', 'day-col');
+    const head = el('div', 'day-header');
+    const dateForDay = weekDates[di];
+    const todayFlag = isToday(dateForDay);
+    if (todayFlag) head.classList.add('is-today');
+
+    const dayNameEl = el('div', 'day-name'); dayNameEl.textContent = DAYS_SHORT[di];
+    const dayDateEl = el('div', 'day-date'); dayDateEl.textContent = formatDayDate(dateForDay);
+    head.appendChild(dayNameEl); head.appendChild(dayDateEl);
+    if (todayFlag) {
+      const todayTag = el('div', 'day-date-sub'); todayTag.textContent = 'Today';
+      head.appendChild(todayTag);
+    }
+    col.appendChild(head);
+
+    const body = el('div', 'day-body');
+    const daySlots = displaySlots.filter(s => s.day === di)
+      .sort((a, b) => timeToMins(a.time) - timeToMins(b.time));
+
+    daySlots.forEach(slot => body.appendChild(renderSlotCard(slot, isPast)));
+
+    if (!isPast) {
+      const addBtn = el('div', 'add-slot-btn');
+      addBtn.innerHTML = `<span style="font-size:18px;line-height:1">+</span> Add`;
+      addBtn.addEventListener('click', () => openModal({ type: 'add', day: di }));
+      body.appendChild(addBtn);
+    }
+
+    col.appendChild(body);
+    grid.appendChild(col);
+  });
+  main.appendChild(grid);
+
+  // Actions (current week only)
+  if (!isPast) {
+    const row = el('div', 'actions-row');
+    const inp = el('input', 'week-name-input');
+    inp.placeholder = 'Week label (auto-filled)';
+    // Auto-fill if empty
+    const autoLabel = getAutoWeekLabel();
+    inp.value = STATE.data.weekLabel || autoLabel;
+    if (!STATE.data.weekLabel) setData({ weekLabel: autoLabel }, true);
+    inp.addEventListener('input', e => setData({ weekLabel: e.target.value }));
+
+    const saveBtn = btn('Save week', 'btn-primary', () => {
+      const label = STATE.data.weekLabel || autoLabel;
+      pushUndo('save week');
+      const offset = -(STATE.data.history.length + 1);
+      const entry = {
+        id: uid(), offset, label,
+        savedAt: new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }),
+        slots: STATE.data.slots.map(s => ({...s})),
+        done, total, pct
+      };
+      setData({ history: [entry, ...STATE.data.history] });
+      showToast(`Saved "${label}"`, null, null);
+    });
+
+    const newBtn = btn('New week', 'btn-ghost', () => {
+      pushUndo('new week (clear ticks)');
+      const nextLabel = getAutoWeekLabel();
+      setData({ slots: STATE.data.slots.map(s => ({...s, done: false, note: ''})), weekLabel: nextLabel });
+      showToast('Started new week — ticks cleared', 'Undo', doUndo);
+    });
+
+    row.appendChild(inp); row.appendChild(saveBtn); row.appendChild(newBtn);
+    main.appendChild(row);
+  }
+
+  // History
+  if (STATE.data.history.length && !isPast) {
+    const hs = el('div', 'history-section');
+    const ht = el('div', 'section-title'); ht.textContent = 'Weekly history';
+    hs.appendChild(ht);
+    const hl = el('div', 'history-list');
+
+    STATE.data.history.forEach(w => {
+      const hc = el('div', 'history-card');
+
+      const top = el('div', 'history-card-top');
+      const info = el('div');
+      const name = el('div', 'history-name'); name.textContent = w.label;
+      const meta = el('div', 'history-meta'); meta.textContent = `Saved ${w.savedAt} · ${w.done}/${w.total} done`;
+      info.appendChild(name); info.appendChild(meta);
+
+      const right = el('div', 'history-right');
+      const vBtn = el('button', 'small-btn'); vBtn.textContent = 'View';
+      vBtn.addEventListener('click', () => setState({ weekOffset: w.offset, modal: null }));
+      const pct2 = el('div', 'history-pct'); pct2.textContent = w.pct + '%';
+      const dBtn = el('button', 'del-btn'); dBtn.textContent = '🗑';
+      dBtn.addEventListener('click', () => {
+        pushUndo(`delete week "${w.label}"`);
+        setData({ history: STATE.data.history.filter(h => h.id !== w.id) });
+        showToast(`Deleted "${w.label}"`, 'Undo', doUndo);
+      });
+      right.appendChild(vBtn); right.appendChild(pct2); right.appendChild(dBtn);
+
+      top.appendChild(info); top.appendChild(right);
+      const barTrack = el('div', 'history-bar-track');
+      const barFill = el('div', 'history-bar-fill'); barFill.style.width = w.pct + '%';
+      barTrack.appendChild(barFill);
+      hc.appendChild(top); hc.appendChild(barTrack);
+      hl.appendChild(hc);
+    });
+    hs.appendChild(hl);
+    main.appendChild(hs);
+  }
+
+  return main;
+}
+
+// ═══════════════════════════════════════════════════════
+// SLOT CARD
+// ═══════════════════════════════════════════════════════
+
+function renderSlotCard(slot, isPast) {
+  const subj = STATE.data.subjects.find(s => s.id === slot.subject) || STATE.data.subjects[0];
+  const c = getColour(subj?.colour);
+  const isLesson = slot.type === 'lesson' || subj?.isLesson;
+
+  const card = el('div', `slot-card${slot.done ? ' is-done' : ''}${isPast ? ' is-past' : ''}${isLesson ? ' is-lesson' : ''}`);
+  card.style.cssText = `background:${c.bg}; border-color:${c.border}; color:${c.hex}`;
+
+  const bar = el('div', 'slot-accent-bar'); bar.style.background = c.hex;
+  const tick = el('div', 'slot-tick'); tick.textContent = slot.done ? '✓' : '○';
+  const name = el('div', 'slot-name'); name.textContent = subj?.name || 'Lesson';
+  const time = el('div', 'slot-time');
+  time.textContent = isLesson
+    ? slot.time
+    : slot.time + (subj?.tool ? ' · ' + subj.tool : '');
+
+  // Badge: pulsing LIVE dot for online lessons, plain tag for revision
+  let badge;
+  if (isLesson) {
+    badge = el('div', 'live-badge');
+    const dot = el('div', 'live-dot');
+    badge.appendChild(dot);
+    badge.appendChild(document.createTextNode('Live'));
+  } else {
+    badge = el('div', 'revision-badge');
+    badge.style.cssText = `background:${c.tag}; color:${c.hex}`;
+    badge.textContent = subj?.tag || 'Revision';
+  }
+
+  card.appendChild(bar); card.appendChild(tick);
+  card.appendChild(name); card.appendChild(time); card.appendChild(badge);
+
+  if (slot.note) {
+    const notePrev = el('div', 'slot-note-preview');
+    notePrev.textContent = '📝 ' + slot.note;
+    card.appendChild(notePrev);
+  }
+
+  card.addEventListener('click', () => openModal({ type: 'slot', slot: {...slot}, isPast }));
+  return card;
+}
+
+// ═══════════════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════════════
+
+function renderModal() {
+  const m = STATE.modal;
+  const overlay = el('div', 'modal-overlay');
+  const box = el('div', 'modal-box');
+
+  // Close button — always works
+  const closeBtn = el('button', 'modal-close-btn');
+  closeBtn.innerHTML = '&times;';
+  closeBtn.setAttribute('aria-label', 'Close');
+  closeBtn.addEventListener('click', closeModal);
+  box.appendChild(closeBtn);
+
+  // Close on backdrop click
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+
+  if (m.type === 'slot')  buildSlotModal(box, m.slot, m.isPast);
+  if (m.type === 'add')   buildAddModal(box, m.day);
+  if (m.type === 'sync')  buildSyncModal(box);
+
+  overlay.appendChild(box);
+  return overlay;
+}
+
+// ── SLOT MODAL ────────────────────────────────────────
+function buildSlotModal(box, slot, isPast) {
+  const subj = STATE.data.subjects.find(s => s.id === slot.subject) || STATE.data.subjects[0];
+
+  const title = el('div', 'modal-title'); title.textContent = subj?.name || 'Lesson';
+  const isLesson = slot.type === 'lesson' || subj?.isLesson;
+  const sub = el('div', 'modal-subtitle');
+  sub.textContent = slot.time + (isLesson ? ' · Online lesson' : (subj?.tool ? ' · ' + subj.tool : ''));
+  box.appendChild(title); box.appendChild(sub);
+
+  if (!isPast) {
+    let localDone = slot.done;
+    let localNote = slot.note || '';
+    let localSubject = slot.subject;
+
+    // Done toggle
+    const doneBtn = el('button', `done-toggle-btn ${localDone ? 'done-on' : 'done-off'}`);
+    doneBtn.textContent = localDone ? '✓ Done — tap to undo' : '○ Mark as done';
+    doneBtn.addEventListener('click', () => {
+      localDone = !localDone;
+      doneBtn.className = `done-toggle-btn ${localDone ? 'done-on' : 'done-off'}`;
+      doneBtn.textContent = localDone ? '✓ Done — tap to undo' : '○ Mark as done';
+    });
+    box.appendChild(doneBtn);
+
+    // Subject selector
+    const subjSel = el('select', 'form-select');
+    STATE.data.subjects.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.id; opt.textContent = s.name;
+      if (s.id === localSubject) opt.selected = true;
+      subjSel.appendChild(opt);
+    });
+    subjSel.addEventListener('change', e => localSubject = e.target.value);
+    box.appendChild(formGroup('Subject', subjSel));
+
+    // Notes
+    const noteTA = el('textarea', 'form-textarea');
+    noteTA.placeholder = 'How did it go? e.g. Finished Tassomai chapter, struggled with equations…';
+    noteTA.value = localNote;
+    noteTA.addEventListener('input', e => localNote = e.target.value);
+    box.appendChild(formGroup('📝 Notes', noteTA));
+
+    // Buttons
+    const btns = el('div', 'modal-btns');
+    const removeBtn = btn('Remove slot', 'btn-danger', () => {
+      const subjName = STATE.data.subjects.find(s => s.id === slot.subject)?.name || 'slot';
+      pushUndo(`remove ${subjName}`);
+      setData({ slots: STATE.data.slots.filter(s => s.id !== slot.id) });
+      closeModal();
+      showToast(`Removed ${subjName}`, 'Undo', doUndo);
+    });
+    const saveBtn = btn('Save', 'btn-primary', () => {
+      const subjName = STATE.data.subjects.find(s => s.id === localSubject)?.name || 'slot';
+      pushUndo(`edit ${subjName}`);
+      setData({ slots: STATE.data.slots.map(s => s.id === slot.id ? {...s, done: localDone, note: localNote, subject: localSubject} : s) });
+      closeModal();
+    });
+    btns.appendChild(removeBtn); btns.appendChild(saveBtn);
+    box.appendChild(btns);
+
+  } else {
+    // Past week — read only
+    const ro = el('div');
+    ro.style.cssText = 'background:rgba(255,255,255,0.04);border-radius:10px;padding:11px 14px;font-size:13px;color:var(--text2);margin-bottom:10px';
+    ro.textContent = '📖 Past week — this is read only.';
+    box.appendChild(ro);
+
+    if (slot.note) {
+      const nb = el('div');
+      nb.style.cssText = 'font-size:14px;color:var(--text);line-height:1.7;border-left:3px solid var(--accent);padding-left:12px;margin-bottom:14px';
+      nb.textContent = slot.note;
+      box.appendChild(nb);
+    }
+
+    const closeB = btn('Close', 'btn-primary btn-full', closeModal);
+    box.appendChild(closeB);
+  }
+}
+
+// ── ADD SLOT MODAL ────────────────────────────────────
+function buildAddModal(box, day) {
+  const title = el('div', 'modal-title'); title.textContent = 'Add lesson — ' + DAYS[day];
+  const sub = el('div', 'modal-subtitle'); sub.textContent = 'Choose subject and time';
+  box.appendChild(title); box.appendChild(sub);
+
+  let selSubj = STATE.data.subjects[0]?.id || '';
+  let selTime = '09:00';
+
+  const subjSel = el('select', 'form-select');
+  STATE.data.subjects.forEach(s => {
+    const opt = document.createElement('option'); opt.value = s.id; opt.textContent = s.name;
+    subjSel.appendChild(opt);
+  });
+  subjSel.addEventListener('change', e => selSubj = e.target.value);
+  box.appendChild(formGroup('Subject', subjSel));
+
+  const timeInp = el('input', 'form-input'); timeInp.type = 'time'; timeInp.value = '09:00';
+  timeInp.addEventListener('input', e => selTime = e.target.value);
+  box.appendChild(formGroup('Time', timeInp));
+
+  const btns = el('div', 'modal-btns');
+  const cancelBtn = btn('Cancel', 'btn-ghost', closeModal);
+  const addBtn = btn('Add Lesson', 'btn-primary', () => {
+    const newSlot = { id: uid(), day, time: selTime, subject: selSubj, note: '', done: false, type: 'revision' };
+    setData({ slots: [...STATE.data.slots, newSlot] });
+    closeModal();
+  });
+  btns.appendChild(cancelBtn); btns.appendChild(addBtn);
+  box.appendChild(btns);
+}
+
+// ── SYNC MODAL ────────────────────────────────────────
+function buildSyncModal(box) {
+  const title = el('div', 'modal-title'); title.textContent = '⇄ Sync between devices';
+  const sub = el('div', 'modal-subtitle'); sub.textContent = 'Move your data between your laptop and iPhone';
+  box.appendChild(title); box.appendChild(sub);
+
+  const info = el('div', 'info-box');
+  info.innerHTML = '<strong>How it works:</strong> tap <em>Copy code</em> on one device, then open the app on your other device and paste it into the restore box.';
+  box.appendChild(info);
+
+  // Export
+  const exportBtn = btn('📋 Copy backup code', 'btn-primary btn-full', () => {
+    const code = btoa(unescape(encodeURIComponent(JSON.stringify({
+      slots: STATE.data.slots, subjects: STATE.data.subjects,
+      history: STATE.data.history, theme: STATE.data.theme,
+      weekLabel: STATE.data.weekLabel,
+    }))));
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(code).then(() => {
+        exportBtn.textContent = '✓ Copied to clipboard!';
+        setTimeout(() => exportBtn.textContent = '📋 Copy backup code', 2500);
+      });
+    } else {
+      const cd = el('div', 'code-display'); cd.textContent = code;
+      box.insertBefore(cd, importSection);
+    }
+  });
+  exportBtn.style.marginBottom = '12px';
+  box.appendChild(exportBtn);
+
+  // Import
+  const importSection = el('div');
+  const importLabel = el('div', 'form-label'); importLabel.textContent = 'Or paste a backup code to restore:';
+  const importTA = el('textarea', 'form-textarea'); importTA.placeholder = 'Paste your backup code here…';
+  importTA.style.minHeight = '60px'; importTA.style.fontFamily = 'monospace'; importTA.style.fontSize = '11px';
+  const restoreBtn = btn('↓ Restore from code', 'btn-ghost btn-full', () => {
+    try {
+      const d = JSON.parse(decodeURIComponent(escape(atob(importTA.value.trim()))));
+      if (!d.slots) throw new Error('Invalid');
+      if (!confirm('This replaces all your current data. Continue?')) return;
+      setData({ slots: d.slots, subjects: d.subjects || STATE.data.subjects,
+        history: d.history || [], theme: d.theme || 'dark', weekLabel: d.weekLabel || '' });
+      closeModal();
+      alert('✓ Data restored!');
+    } catch { alert('Invalid code — make sure you copied the whole thing.'); }
+  });
+  restoreBtn.style.marginTop = '8px';
+  importSection.appendChild(importLabel); importSection.appendChild(importTA); importSection.appendChild(restoreBtn);
+  box.appendChild(importSection);
+}
+
+// ═══════════════════════════════════════════════════════
+// SETTINGS PANEL
+// ═══════════════════════════════════════════════════════
+
+function renderSettings() {
+  const wrap = el('div', 'settings-wrap');
+  const backdrop = el('div', 'settings-backdrop');
+  backdrop.addEventListener('click', () => setState({ showSettings: false }));
+  wrap.appendChild(backdrop);
+
+  const panel = el('div', 'settings-panel');
+
+  // Header
+  const header = el('div', 'settings-header');
+  const headerTitle = el('span'); headerTitle.textContent = 'Settings';
+  const closeBtn = el('button', 'modal-close-btn');
+  closeBtn.innerHTML = '&times;';
+  closeBtn.style.position = 'static';
+  closeBtn.addEventListener('click', () => setState({ showSettings: false }));
+  header.appendChild(headerTitle); header.appendChild(closeBtn);
+  panel.appendChild(header);
+
+  // ── BACKGROUND ──
+  const bgSec = el('div', 'settings-section');
+  const bgLabel = el('div', 'settings-section-label'); bgLabel.textContent = 'Background';
+  bgSec.appendChild(bgLabel);
+
+  const bgOptions = el('div', 'bg-options');
+
+  const solidOpt = el('button', `bg-option${STATE.data.bgType === 'solid' ? ' active' : ''}`);
+  solidOpt.innerHTML = '<div class="bg-option-icon">🎨</div><div class="bg-option-label">Colour</div>';
+  solidOpt.addEventListener('click', () => {
+    document.querySelectorAll('.bg-option').forEach(o => o.classList.remove('active'));
+    solidOpt.classList.add('active');
+    setData({ bgType: 'solid' });
+  });
+
+  const photoOpt = el('button', `bg-option${STATE.data.bgType === 'photo' ? ' active' : ''}`);
+  photoOpt.innerHTML = '<div class="bg-option-icon">📷</div><div class="bg-option-label">Photo</div>';
+  photoOpt.addEventListener('click', () => {
+    document.querySelector('#photo-input').click();
+  });
+
+  bgOptions.appendChild(solidOpt); bgOptions.appendChild(photoOpt);
+  bgSec.appendChild(bgOptions);
+
+  // Colour swatches
+  const colRow = el('div', 'color-picker-row');
+  BG_COLOURS.forEach(c => {
+    const sw = el('div', `color-swatch${STATE.data.bgColour === c.hex ? ' active' : ''}`);
+    sw.style.background = c.hex;
+    sw.addEventListener('click', () => {
+      document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+      sw.classList.add('active');
+      setData({ bgColour: c.hex, bgType: 'solid' });
+    });
+    colRow.appendChild(sw);
+  });
+  bgSec.appendChild(colRow);
+
+  // Photo upload button
+  const uploadBtn = el('div', 'upload-photo-btn');
+  uploadBtn.textContent = '📷 Choose photo from camera roll';
+  uploadBtn.style.marginTop = '10px';
+  uploadBtn.addEventListener('click', () => document.querySelector('#photo-input').click());
+
+  const photoInput = el('input'); photoInput.type = 'file'; photoInput.id = 'photo-input';
+  photoInput.accept = 'image/*';
+  photoInput.addEventListener('change', e => {
+    if (e.target.files[0]) {
+      compressAndSetImage(e.target.files[0]);
+      document.querySelectorAll('.bg-option').forEach(o => o.classList.remove('active'));
+      photoOpt.classList.add('active');
+    }
+  });
+
+  bgSec.appendChild(uploadBtn); bgSec.appendChild(photoInput);
+
+  if (STATE.data.bgType === 'photo' && STATE.bgImageData) {
+    const clearBtn = btn('✕ Remove photo', 'btn-ghost', () => {
+      STATE.bgImageData = null; saveBgImage(null);
+      setData({ bgType: 'solid' });
+    });
+    clearBtn.style.cssText = 'width:100%;margin-top:8px;justify-content:center';
+    bgSec.appendChild(clearBtn);
+  }
+  panel.appendChild(bgSec);
+
+  // ── THEME ──
+  const themeSec = el('div', 'settings-section');
+  const themeLabel = el('div', 'settings-section-label'); themeLabel.textContent = 'Colour theme';
+  themeSec.appendChild(themeLabel);
+
+  const tGrid = el('div', 'theme-grid');
+  THEMES.forEach(t => {
+    const tile = el('button', `theme-tile${STATE.data.theme === t.id ? ' active' : ''}`);
+    tile.innerHTML = `<div class="theme-preview" style="background:${t.bg}"></div><div class="theme-name">${t.name}</div>`;
+    tile.addEventListener('click', () => {
+      setData({ theme: t.id, bgColour: t.bg, bgType: 'solid' });
+    });
+    tGrid.appendChild(tile);
+  });
+  themeSec.appendChild(tGrid);
+  panel.appendChild(themeSec);
+
+  // ── SUBJECTS ──
+  const subjSec = el('div', 'settings-section');
+  const subjLabel = el('div', 'settings-section-label'); subjLabel.textContent = 'Subjects';
+  subjSec.appendChild(subjLabel);
+
+  const subjList = el('div', 'subject-list');
+  STATE.data.subjects.forEach(s => {
+    const c = getColour(s.colour);
+    const row = el('div', 'subject-row');
+    const dot = el('div', 'subject-dot'); dot.style.background = c.hex;
+    const name = el('span', 'subject-name'); name.textContent = s.name;
+    const tool = el('span', 'subject-tool'); tool.textContent = s.tool;
+    const delBtn = el('button', 'subject-del'); delBtn.textContent = '✕';
+    delBtn.addEventListener('click', () => {
+      pushUndo(`remove subject "${s.name}"`);
+      setData({ subjects: STATE.data.subjects.filter(x => x.id !== s.id) });
+      showToast(`Removed subject "${s.name}"`, 'Undo', doUndo);
+    });
+    row.appendChild(dot); row.appendChild(name); row.appendChild(tool); row.appendChild(delBtn);
+    subjList.appendChild(row);
+  });
+  subjSec.appendChild(subjList);
+
+  // Add subject
+  let newName = '', newColour = 'purple';
+  const addRow = el('div', 'add-subject-row');
+  const nameInp = el('input', 'form-input'); nameInp.placeholder = 'New subject…';
+  nameInp.addEventListener('input', e => newName = e.target.value);
+  nameInp.addEventListener('keydown', e => { if (e.key === 'Enter') doAddSubject(); });
+
+  const swWrap = el('div'); swWrap.style = 'display:flex;gap:5px;align-items:center;flex-shrink:0';
+  COLOURS.slice(0, 6).forEach(c => {
+    const sw = el('div', `swatch${newColour === c.id ? ' active' : ''}`);
+    sw.style.cssText = `background:${c.hex};width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .12s;flex-shrink:0`;
+    sw.addEventListener('click', () => {
+      newColour = c.id;
+      swWrap.querySelectorAll('.swatch, div[data-cid]').forEach(x => x.style.borderColor = 'transparent');
+      sw.style.borderColor = '#fff'; sw.style.transform = 'scale(1.2)';
+    });
+    swWrap.appendChild(sw);
+  });
+
+  const addBtn = btn('+', 'btn-primary', () => doAddSubject());
+  addBtn.style.padding = '8px 14px; flex-shrink:0';
+
+  function doAddSubject() {
+    if (!newName.trim()) return;
+    setData({ subjects: [...STATE.data.subjects, { id: uid(), name: newName.trim(), colour: newColour, tool: '', tag: 'Lesson' }] });
+    nameInp.value = ''; newName = '';
+  }
+
+  addRow.appendChild(nameInp); addRow.appendChild(swWrap); addRow.appendChild(addBtn);
+  subjSec.appendChild(addRow);
+  panel.appendChild(subjSec);
+
+  // ── SIGN OUT ──
+  const signOutBtn = btn('Sign out', 'btn-ghost btn-full', () => {
+    if (confirm(`Sign out of "${STATE.username}"?`)) {
+      setState({ screen: 'login', username: null, weekOffset: 0, modal: null, showSettings: false });
+    }
+  });
+  signOutBtn.style.marginTop = '8px';
+  panel.appendChild(signOutBtn);
+
+  wrap.appendChild(panel);
+  return wrap;
+}
+
+// ═══════════════════════════════════════════════════════
+// MAIN RENDER
+// ═══════════════════════════════════════════════════════
+
+function render() {
+  applyBackground();
+  const root = document.getElementById('root');
+  root.innerHTML = '';
+
+  if (STATE.screen === 'login') {
+    root.appendChild(renderLogin());
+    return;
+  }
+
+  root.appendChild(renderTopbar());
+  root.appendChild(renderMain());
+  if (STATE.modal) root.appendChild(renderModal());
+  if (STATE.showSettings) root.appendChild(renderSettings());
+  startClock();
+}
+
+// ═══════════════════════════════════════════════════════
+// TOAST / UNDO SYSTEM
+// ═══════════════════════════════════════════════════════
+
+let toastContainer = null;
+function getToastContainer() {
+  if (!toastContainer || !document.body.contains(toastContainer)) {
+    toastContainer = document.createElement('div');
+    toastContainer.className = 'toast-container';
+    document.body.appendChild(toastContainer);
+  }
+  return toastContainer;
+}
+
+function showToast(message, undoLabel, undoFn) {
+  const container = getToastContainer();
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.style.position = 'relative'; toast.style.overflow = 'hidden';
+
+  const msg = document.createElement('div');
+  msg.className = 'toast-msg'; msg.textContent = message;
+  toast.appendChild(msg);
+
+  if (undoFn) {
+    const undoBtn = document.createElement('button');
+    undoBtn.className = 'toast-undo'; undoBtn.textContent = 'Undo';
+    undoBtn.onclick = () => { removeToast(toast); undoFn(); };
+    toast.appendChild(undoBtn);
+  }
+
+  // Progress bar
+  const bar = document.createElement('div');
+  bar.className = 'toast-bar'; bar.style.width = '100%';
+  toast.appendChild(bar);
+
+  container.appendChild(toast);
+  const DURATION = 4000;
+  bar.style.transition = `width ${DURATION}ms linear`;
+  requestAnimationFrame(() => { bar.style.width = '0%'; });
+
+  const timer = setTimeout(() => removeToast(toast), DURATION);
+  toast.dataset.timer = timer;
+}
+
+function removeToast(toast) {
+  clearTimeout(Number(toast.dataset.timer));
+  toast.classList.add('removing');
+  setTimeout(() => toast.remove(), 220);
+}
+
+// ═══════════════════════════════════════════════════════
+// AUTO WEEK LABEL
+// ═══════════════════════════════════════════════════════
+
+function getAutoWeekLabel() {
+  const now = new Date();
+  // Get Monday of current week
+  const day = now.getDay(); // 0=Sun
+  const diffToMon = (day === 0) ? -6 : 1 - day;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMon);
+  const dayStr = monday.getDate();
+  const monthStr = monday.toLocaleDateString('en-GB', { month: 'short' });
+  const yearStr = monday.getFullYear();
+  // Week number of year
+  const startOfYear = new Date(monday.getFullYear(), 0, 1);
+  const weekNum = Math.ceil(((monday - startOfYear) / 86400000 + startOfYear.getDay() + 1) / 7);
+  return `Week ${weekNum} · ${dayStr} ${monthStr} ${yearStr}`;
+}
+
+// ═══════════════════════════════════════════════════════
+// TIME HELPERS + CLOCK + NEXT UP
+// ═══════════════════════════════════════════════════════
+
+// Returns array of 5 Date objects for Mon-Fri of the current week
+// weekOffset: 0 = this week, -1 = last week, etc.
+function getWeekDates(weekOffset) {
+  const now = new Date();
+  const localDay = now.getDay(); // 0=Sun, 1=Mon...
+  const diffToMon = localDay === 0 ? -6 : 1 - localDay;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMon + (weekOffset * 7));
+  monday.setHours(0, 0, 0, 0);
+  return [0,1,2,3,4].map(i => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    return d;
+  });
+}
+
+function ordinal(n) {
+  const s = ['th','st','nd','rd'];
+  const v = n % 100;
+  return n + (s[(v-20)%10] || s[v] || s[0]);
+}
+
+function formatDayDate(date) {
+  // e.g. "17th Mar"
+  return ordinal(date.getDate()) + ' ' + date.toLocaleDateString('en-GB', { month: 'short' });
+}
+
+function isToday(date) {
+  const now = new Date();
+  return date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear();
+}
+
+function timeToMins(t) {
+  // handles "9:45", "11:00", "14:15" etc.
+  const parts = t.split(':');
+  return parseInt(parts[0], 10) * 60 + parseInt(parts[1] || '0', 10);
+}
+
+function gmtNowMins() {
+  const now = new Date();
+  return now.getUTCHours() * 60 + now.getUTCMinutes();
+}
+
+function gmtDayIndex() {
+  // 0=Mon ... 4=Fri, returns -1 on Sat/Sun
+  const d = new Date().getUTCDay(); // 0=Sun,1=Mon...6=Sat
+  if (d === 0 || d === 6) return -1;
+  return d - 1;
+}
+
+function updateClock() {
+  const el2 = document.getElementById('live-clock');
+  if (!el2) return;
+  const now = new Date();
+  const h = String(now.getUTCHours()).padStart(2, '0');
+  const m = String(now.getUTCMinutes()).padStart(2, '0');
+  const s = String(now.getUTCSeconds()).padStart(2, '0');
+  el2.textContent = `${h}:${m}:${s}`;
+}
+
+// Start clock ticker — runs every second, only updates the text node, no re-render
+let clockInterval = null;
+function startClock() {
+  if (clockInterval) clearInterval(clockInterval);
+  clockInterval = setInterval(() => {
+    updateClock();
+    // Also refresh next-up card every minute
+    const nextUpEl = document.getElementById('next-up-card');
+    if (nextUpEl) {
+      const fresh = buildNextUpCard();
+      if (fresh) nextUpEl.replaceWith(fresh);
+      else nextUpEl.remove();
+    }
+  }, 1000);
+}
+
+function buildNextUpCard() {
+  if (STATE.weekOffset !== 0) return null; // only show on current week
+
+  const nowMins = gmtNowMins();
+  const todayIdx = gmtDayIndex();
+  const allSlots = STATE.data.slots;
+
+  // Collect all slots for today AND future days this week, with computed mins
+  let candidates = [];
+  for (let di = Math.max(todayIdx, 0); di < 5; di++) {
+    const daySlots = allSlots
+      .filter(s => s.day === di)
+      .map(s => ({ ...s, mins: timeToMins(s.time) }))
+      .sort((a, b) => a.mins - b.mins);
+    daySlots.forEach(s => candidates.push({ ...s, di }));
+  }
+
+  // Find: currently happening (within 45-min window) OR next upcoming
+  let current = null, upcoming = null;
+
+  if (todayIdx >= 0) {
+    const todaySlots = candidates.filter(s => s.di === todayIdx);
+    current = todaySlots.find(s => s.mins <= nowMins && nowMins < s.mins + 45 && !s.done) || null;
+    upcoming = candidates.find(s => {
+      if (s.di === todayIdx) return s.mins > nowMins && !s.done;
+      return s.di > todayIdx && !s.done;
+    }) || null;
+  } else {
+    // Weekend — show first slot of Monday
+    upcoming = candidates.find(s => !s.done) || null;
+  }
+
+  const target = current || upcoming;
+  if (!target) return null;
+
+  const subj = STATE.data.subjects.find(s => s.id === target.subject) || STATE.data.subjects[0];
+  const c = getColour(subj?.colour);
+  const isLesson = target.type === 'lesson' || subj?.isLesson;
+  const isNow = !!current;
+
+  const card = el('div', `next-up-card${isNow ? ' next-up-now' : ''}`);
+  card.id = 'next-up-card';
+  if (isNow) card.style.borderColor = 'rgba(78,205,196,0.3)';
+
+  // Colour dot
+  const dot = el('div', 'next-up-dot');
+  dot.style.background = c.hex;
+  card.appendChild(dot);
+
+  // Info
+  const info = el('div', 'next-up-left');
+  const eyebrow = el('div', 'next-up-eyebrow');
+  const dayNames = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const targetDay = target.di === todayIdx ? 'Today' : dayNames[target.di];
+  eyebrow.textContent = isNow ? '▶ Happening now' : `Coming up · ${targetDay}`;
+
+  const title = el('div', 'next-up-title');
+  title.style.color = c.hex;
+  title.textContent = subj?.name || 'Lesson';
+
+  const meta = el('div', 'next-up-meta');
+  meta.textContent = target.time + (isLesson ? ' · Online lesson' : (subj?.tool ? ' · ' + subj.tool : ''));
+
+  info.appendChild(eyebrow); info.appendChild(title); info.appendChild(meta);
+  card.appendChild(info);
+
+  // Right side
+  const right2 = el('div', 'next-up-countdown');
+  if (isNow) {
+    const badge = el('div', 'now-badge'); badge.textContent = 'Now';
+    right2.appendChild(badge);
+  } else if (target.di === todayIdx) {
+    const diffMins = target.mins - nowMins;
+    const hrs = Math.floor(diffMins / 60);
+    const mins = diffMins % 60;
+    const num = el('div', 'countdown-num');
+    num.textContent = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
+    const lbl = el('div', 'countdown-label'); lbl.textContent = 'until start';
+    right2.appendChild(num); right2.appendChild(lbl);
+  } else {
+    const num = el('div', 'countdown-num'); num.textContent = targetDay.slice(0,3);
+    const lbl = el('div', 'countdown-label'); lbl.textContent = target.time;
+    right2.appendChild(num); right2.appendChild(lbl);
+  }
+  card.appendChild(right2);
+  return card;
+}
+
+// ─── BOOT ─────────────────────────────────────────────
+STATE.bgImageData = loadBgImage();
+render();
+startClock();
+</script>
+</body>
+</html>
