@@ -48,9 +48,12 @@ body{font-family:'Inter',-apple-system,sans-serif;font-size:15px;background:var(
 .icon-btn:hover{background:rgba(255,255,255,.12);color:var(--text);border-color:var(--border2)}
 .icon-btn.pomo-btn{background:rgba(255,55,95,.12);border-color:rgba(255,55,95,.3);color:var(--pink)}
 .icon-btn.weekend-btn{background:rgba(48,209,88,.10);border-color:rgba(48,209,88,.3);color:var(--green)}
+
+/* CLOCK — updated to show GMT */
 .clock-wrap{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0}
 .clock-time{font-size:15px;font-weight:600;letter-spacing:.02em;color:var(--text);line-height:1;font-variant-numeric:tabular-nums}
 .clock-label{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-top:2px}
+
 .avatar-btn{width:32px;height:32px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
 
 /* MAIN CONTENT */
@@ -291,7 +294,7 @@ body{font-family:'Inter',-apple-system,sans-serif;font-size:15px;background:var(
 .wt-exam-tip{font-size:10px;color:var(--text3);margin-top:3px;line-height:1.4}
 .exam-board-chip{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.08);color:var(--text3);margin-left:6px;vertical-align:middle}
 
-/* ═══ ANALYTICS TAB ══════════════════════════════ */
+/* ANALYTICS */
 .analytics-page{padding:20px 16px 100px;max-width:1100px;margin:0 auto}
 .analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
 @media(max-width:700px){.analytics-grid{grid-template-columns:1fr}}
@@ -534,7 +537,6 @@ function checkNotifications(){
       sendNotification(`${name} is starting now`,slot.type==='lesson'?'Your online lesson is live':'Time to revise!',key0);
     }
   });
-  // Clear old keys every hour
   const h=new Date().getUTCHours();
   if(!_notifSentThisMinute._h||_notifSentThisMinute._h!==h){
     const keep={_h:h};Object.keys(_notifSentThisMinute).forEach(k=>{if(k.startsWith('5-')||k.startsWith('0-')){const id=k.slice(2);if(todaySlots.some(s=>s.id===id))keep[k]=true;}});
@@ -547,7 +549,6 @@ let STATE={screen:'login',username:null,weekOffset:0,modal:null,showSettings:fal
 
 function pushUndo(label){STATE.undoStack.push({snapshot:JSON.parse(JSON.stringify(STATE.data)),label});if(STATE.undoStack.length>20)STATE.undoStack.shift();}
 function doUndo(){const e=STATE.undoStack.pop();if(!e)return;STATE.data=e.snapshot;if(STATE.username)saveUserData(STATE.username,STATE.data);render();showToast('Undone: '+e.label,null);}
-// setData: update without calling render if silent=true
 function setData(patch,save=true,silent=false){Object.assign(STATE.data,patch);if(save&&STATE.username)saveUserData(STATE.username,STATE.data);if(!silent)render();}
 function setState(patch){Object.assign(STATE,patch);render();}
 function openModal(modal){setState({modal});}
@@ -571,7 +572,6 @@ function checkAutoSave(){
   const entry={id:uid(),offset,label,savedAt:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),slots:STATE.data.slots.map(s=>({...s})),done,total,pct,autoSaved:true};
   const nextLabel=getAutoWeekLabel();
   const newSlots=STATE.data.slots.map(s=>({...s,done:false,note:''}));
-  // Use silent setData to avoid double render
   STATE.data.history=[entry,...STATE.data.history];
   STATE.data.slots=newSlots;
   STATE.data.weekLabel=nextLabel;
@@ -670,7 +670,7 @@ function btn(text,cls,fn){const b=mk('button','btn '+cls);b.textContent=text;b.a
 function fg(lbl,inp){const g=mk('div','form-group');const l=mk('label','form-label');l.textContent=lbl;g.appendChild(l);g.appendChild(inp);return g;}
 
 // ═══ TIME ═════════════════════════════════════════════
-function t2m(t){const p=t.split(':');return parseInt(p[0],10)*60+parseInt(p[1]||'0',10);}
+function timeToMins(t){const p=t.split(':');return parseInt(p[0],10)*60+parseInt(p[1]||'0',10);}
 function gmtNowMins(){const n=new Date();return n.getUTCHours()*60+n.getUTCMinutes();}
 function gmtDayIndex(){const d=new Date().getUTCDay();return(d===0||d===6)?-1:d-1;}
 function getWeekDates(off){const now=new Date();const ld=now.getDay();const diff=ld===0?-6:1-ld;const mon=new Date(now);mon.setDate(now.getDate()+diff+(off*7));mon.setHours(0,0,0,0);return[0,1,2,3,4].map(i=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});}
@@ -682,6 +682,32 @@ function getAutoWeekLabel(){
   const now=new Date();const ld=now.getDay();const diff=ld===0?-6:1-ld;const mon=new Date(now);mon.setDate(now.getDate()+diff);
   const y=new Date(mon.getFullYear(),0,1);const wn=Math.ceil(((mon-y)/86400000+y.getDay()+1)/7);
   return`Week ${wn} · ${mon.getDate()} ${mon.toLocaleDateString('en-GB',{month:'short'})} ${mon.getFullYear()}`;
+}
+
+// ═══ CLOCK — shows local time, adapts to BST/GMT automatically ════════
+function getGMTTimeString(){
+  const n=new Date();
+  return String(n.getHours()).padStart(2,'0')+':'+
+         String(n.getMinutes()).padStart(2,'0')+':'+
+         String(n.getSeconds()).padStart(2,'0');
+}
+
+function updateClock(){
+  const e=document.getElementById('live-clock');
+  if(!e)return;
+  e.textContent=getGMTTimeString();
+}
+
+let _clockInt=null;
+function startClock(){
+  // Update immediately so clock shows correct time without 1s delay
+  updateClock();
+  if(_clockInt)clearInterval(_clockInt);
+  _clockInt=setInterval(()=>{
+    updateClock();
+    const nu=document.getElementById('next-up-card');if(nu){const f=buildNextUpCard();if(f)nu.replaceWith(f);else nu.remove();}
+    checkAutoSave();checkNotifications();
+  },1000);
 }
 
 // ═══ LOGIN ════════════════════════════════════════════
@@ -700,10 +726,8 @@ function renderLogin(){
 function doLogin(username){
   addKnownUser(username);STATE.bgImageData=loadBgImage();STATE.username=username;
   const saved=loadUserData(username)||getDefaultData();
-  // Ensure analytics object exists
   if(!saved.analytics)saved.analytics={daily:{},weekly:{},monthly:{},subjectTotals:{}};
   STATE.data=saved;STATE.screen='app';
-  // Set weekLabel without triggering extra render
   if(!STATE.data.weekLabel){STATE.data.weekLabel=getAutoWeekLabel();if(username)saveUserData(username,STATE.data);}
   requestNotifications();
   render();
@@ -722,8 +746,15 @@ function renderTopbar(){
   const nb=mk('button','wnbtn');nb.textContent='›';if(!isPast)nb.disabled=true;nb.onclick=()=>{if(isPast)setState({weekOffset:STATE.weekOffset+1,modal:null});};
   nav.appendChild(pb);nav.appendChild(wl);nav.appendChild(nb);left.appendChild(logo);left.appendChild(nav);
   const right=mk('div','top-right');
-  const cw=mk('div','clock-wrap');const ct=mk('div','clock-time');ct.id='live-clock';const cl=mk('div','clock-label');cl.textContent='UTC';cw.appendChild(ct);cw.appendChild(cl);updateClock();right.appendChild(cw);
-  // Weekend btn
+
+  // GMT Clock — label now correctly shows "GMT"
+  const cw=mk('div','clock-wrap');
+  const ct=mk('div','clock-time');ct.id='live-clock';
+  ct.textContent=getGMTTimeString(); // set immediately — no blank state
+  const cl=mk('div','clock-label');const tzOffset=new Date().getTimezoneOffset();cl.textContent=tzOffset<0?'BST':'GMT';
+  cw.appendChild(ct);cw.appendChild(cl);
+  right.appendChild(cw);
+
   const wb=mk('button',`icon-btn weekend-btn`);
   wb.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Weekend';
   if(isWeekend())wb.style.cssText='background:rgba(48,209,88,.18);border-color:rgba(48,209,88,.5);color:var(--green)';
@@ -747,7 +778,7 @@ function renderNavTabs(){
 function buildNextUpCard(){
   if(STATE.weekOffset!==0)return null;
   const nowM=gmtNowMins();const todayIdx=gmtDayIndex();const allSlots=STATE.data.slots;
-  let cands=[];for(let di=Math.max(todayIdx,0);di<5;di++){allSlots.filter(s=>s.day===di).map(s=>({...s,mins:t2m(s.time)})).sort((a,b)=>a.mins-b.mins).forEach(s=>cands.push({...s,di}));}
+  let cands=[];for(let di=Math.max(todayIdx,0);di<5;di++){allSlots.filter(s=>s.day===di).map(s=>({...s,mins:timeToMins(s.time)})).sort((a,b)=>a.mins-b.mins).forEach(s=>cands.push({...s,di}));}
   let current=null,upcoming=null;
   if(todayIdx>=0){const ts=cands.filter(s=>s.di===todayIdx);current=ts.find(s=>s.mins<=nowM&&nowM<s.mins+LESSON_DURATION&&!s.done)||null;upcoming=cands.find(s=>s.di===todayIdx?s.mins>nowM&&!s.done:s.di>todayIdx&&!s.done)||null;}
   else{upcoming=cands.find(s=>!s.done)||null;}
@@ -796,29 +827,22 @@ function renderTimetable(){
   const displaySlots=isPast?(STATE.data.history.find(h=>h.offset===STATE.weekOffset)?.slots||[]):STATE.data.slots;
   const total=displaySlots.length;const done=displaySlots.filter(s=>s.done).length;const pct=total?Math.round(done/total*100):0;
   const main=mk('div','main');
-  // Autosave notice
   if(!isPast){const an=mk('div','autosave-notice');const dot=mk('div','autosave-dot');const msg=mk('span');msg.textContent='Auto-save on — your week saves automatically each Saturday evening.';an.appendChild(dot);an.appendChild(msg);main.appendChild(an);}
-  // Weekend nudge
   if(!isPast&&isWeekend()){const wb=mk('div');wb.style.cssText='background:rgba(48,209,88,.08);border:1px solid rgba(48,209,88,.2);border-radius:var(--r2);padding:10px 16px;margin-bottom:12px;font-size:13px;color:var(--green);display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;transition:background .15s';wb.innerHTML='<span>📚 It\'s the weekend — check your revision plan</span><span style="font-size:12px;font-weight:600;opacity:.7">View →</span>';wb.onclick=()=>setState({showWeekend:true});main.appendChild(wb);}
-  // Quote
   const q=getTodayQuote();const qc=mk('div','quote-card');const qm=mk('div','quote-mark');qm.textContent='"';const qt=mk('div','quote-text');qt.textContent=q.text;const qa=mk('div','quote-author');qa.textContent='— '+q.author;qc.appendChild(qm);qc.appendChild(qt);qc.appendChild(qa);main.appendChild(qc);
-  // Progress
   const pc=mk('div','prog-card');pc.innerHTML=`<div class="prog-label"><strong>${done}/${total}</strong> complete</div><div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div><div class="prog-pct">${pct}%</div>`;main.appendChild(pc);
   if(!isPast){const nu=buildNextUpCard();if(nu)main.appendChild(nu);}
   if(isPast){const he=STATE.data.history.find(h=>h.offset===STATE.weekOffset);const b=mk('div','past-banner');b.textContent=`${he?.label||'Past week'}${he?.autoSaved?' (auto)':''} — read only`;main.appendChild(b);}
-  // Legend
   const leg=mk('div');leg.style.cssText='display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap';leg.innerHTML='<div style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:var(--text2)"><span style="display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.08);padding:2px 8px 2px 6px;border-radius:4px;color:rgba(255,255,255,.75);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase"><span style="width:5px;height:5px;border-radius:50%;background:#fff;animation:pulse 3s ease-in-out infinite;display:inline-block"></span>Live</span>Online lesson</div><div style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:var(--text2)"><span style="background:rgba(10,132,255,.12);color:rgba(10,132,255,.9);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase">Revision</span>Self-study</div>';
   main.appendChild(leg);
-  // Grid
   const grid=mk('div','days-grid');const wd=getWeekDates(STATE.weekOffset);
   DAYS.forEach((day,di)=>{
     const col=mk('div','day-col');const head=mk('div','day-header');const df=wd[di];const today=isToday(df);
     if(today)head.classList.add('is-today');const dn=mk('div','day-name');dn.textContent=DAYS_SHORT[di];const dd=mk('div','day-date');dd.textContent=fmtDayDate(df);head.appendChild(dn);head.appendChild(dd);if(today){const ts=mk('div','day-date-sub');ts.textContent='Today';head.appendChild(ts);}col.appendChild(head);
-    const body=mk('div','day-body');displaySlots.filter(s=>s.day===di).sort((a,b)=>t2m(a.time)-t2m(b.time)).forEach(slot=>body.appendChild(renderSlotCard(slot,isPast)));
+    const body=mk('div','day-body');displaySlots.filter(s=>s.day===di).sort((a,b)=>timeToMins(a.time)-timeToMins(b.time)).forEach(slot=>body.appendChild(renderSlotCard(slot,isPast)));
     if(!isPast){const ab=mk('div','add-slot-btn');ab.innerHTML='<span style="font-size:16px">+</span> Add';ab.onclick=()=>openModal({type:'add',day:di});body.appendChild(ab);}
     col.appendChild(body);grid.appendChild(col);
   });main.appendChild(grid);
-  // Actions (only for current week)
   if(!isPast){
     const row=mk('div','actions-row');
     const inp=mk('input','week-name-input');inp.placeholder='Week label';inp.value=STATE.data.weekLabel;
@@ -831,7 +855,6 @@ function renderTimetable(){
     const newBtn=btn('New week','btn-ghost',()=>{pushUndo('new week');setData({slots:STATE.data.slots.map(s=>({...s,done:false,note:''})),weekLabel:getAutoWeekLabel()});showToast('New week started','Undo',doUndo);});
     row.appendChild(inp);row.appendChild(saveBtn);row.appendChild(newBtn);main.appendChild(row);
   }
-  // History
   if(STATE.data.history.length&&!isPast){
     const hs=mk('div','history-section');const ht=mk('div','section-title');ht.textContent='History';hs.appendChild(ht);
     const hl=mk('div','history-list');
@@ -851,7 +874,6 @@ function renderTimetable(){
 // ═══ ANALYTICS PAGE ═══════════════════════════════════
 function renderAnalytics(){
   const page=mk('div','analytics-page');
-  // Period selector
   const ptabs=mk('div','period-tabs');
   [['daily','Today'],['weekly','This Week'],['monthly','This Month'],['all','All Time']].forEach(([id,lbl])=>{const t=mk('button','period-tab'+(STATE.analyticsPeriod===id?' active':''));t.textContent=lbl;t.onclick=()=>setState({analyticsPeriod:id});ptabs.appendChild(t);});page.appendChild(ptabs);
   const a=STATE.data.analytics;const dk=todayKey();const wk=weekKey();const mk2=monthKey();
@@ -859,23 +881,13 @@ function renderAnalytics(){
   if(STATE.analyticsPeriod==='daily'){periodData=a.daily[dk]||{count:0,subjects:{}};periodLabel='Today';}
   else if(STATE.analyticsPeriod==='weekly'){periodData=a.weekly[wk]||{count:0,subjects:{}};periodLabel='This week';}
   else if(STATE.analyticsPeriod==='monthly'){periodData=a.monthly[mk2]||{count:0,subjects:{}};periodLabel='This month';}
-  else{// All time
-    const sub={};let cnt=0;Object.values(a.subjectTotals||{}).forEach(v=>cnt+=v);Object.entries(a.subjectTotals||{}).forEach(([k,v])=>sub[k]=v);periodData={count:cnt,subjects:sub};periodLabel='All time';}
-  // Stat boxes
+  else{const sub={};let cnt=0;Object.values(a.subjectTotals||{}).forEach(v=>cnt+=v);Object.entries(a.subjectTotals||{}).forEach(([k,v])=>sub[k]=v);periodData={count:cnt,subjects:sub};periodLabel='All time';}
   const statRow=mk('div','stat-row');const totalSlots=STATE.data.slots.length;const doneSlots=STATE.data.slots.filter(s=>s.done).length;
-  // Total sessions
   let allSessions=0;Object.values(a.daily||{}).forEach(d=>allSessions+=d.count);
-  const stats=[
-    {num:periodData.count,lbl:'Sessions done'},
-    {num:doneSlots,lbl:'This week done'},
-    {num:totalSlots,lbl:'Weekly slots'},
-    {num:allSessions,lbl:'Total sessions'},
-  ];
+  const stats=[{num:periodData.count,lbl:'Sessions done'},{num:doneSlots,lbl:'This week done'},{num:totalSlots,lbl:'Weekly slots'},{num:allSessions,lbl:'Total sessions'}];
   stats.forEach(s=>{const b=mk('div','stat-box');const n=mk('div','stat-num');n.textContent=s.num;const l=mk('div','stat-label');l.textContent=s.lbl;b.appendChild(n);b.appendChild(l);statRow.appendChild(b);});page.appendChild(statRow);
-  // Subject breakdown
   const subjCard=mk('div','analytics-card full');const subjTitle=mk('div','analytics-title');subjTitle.innerHTML=`Subject Breakdown <span>${periodLabel}</span>`;subjCard.appendChild(subjTitle);
   const subjectData=periodData.subjects||{};const maxVal=Math.max(1,...Object.values(subjectData));
-  // Show all tracked subjects
   const allSubjects=[...new Set([...Object.keys(subjectData),...STATE.data.subjects.map(s=>s.name)])];
   allSubjects.slice(0,10).forEach(sname=>{
     const count=subjectData[sname]||0;const subj=STATE.data.subjects.find(s=>s.name===sname);const c=getColour(subj?subj.colour:'blue');
@@ -886,14 +898,11 @@ function renderAnalytics(){
   });
   if(allSubjects.length===0){const empty=mk('div');empty.style.cssText='text-align:center;color:var(--text3);padding:24px;font-size:13px';empty.textContent='No sessions recorded yet. Mark slots as done to see your progress!';subjCard.appendChild(empty);}
   page.appendChild(subjCard);
-  // Activity chart (last 7 days bar chart)
   const chartCard=mk('div','analytics-card full');const chartTitle=mk('div','analytics-title');chartTitle.innerHTML='Activity <span>Last 14 days</span>';chartCard.appendChild(chartTitle);
   const canvas=mk('canvas','chart-canvas');canvas.height=120;chartCard.appendChild(canvas);page.appendChild(chartCard);
   requestAnimationFrame(()=>{drawActivityChart(canvas);});
-  // Streaks
   const streakCard=mk('div','analytics-card');const st=mk('div','analytics-title');st.textContent='Streaks';streakCard.appendChild(st);
   const streakDays=countStreak(a.daily);const sd=mk('div');sd.style.cssText='font-size:36px;font-weight:700;color:var(--text);letter-spacing:-1px';sd.textContent=streakDays+'🔥';const sl=mk('div');sl.style.cssText='font-size:12px;color:var(--text3);margin-top:4px';sl.textContent='day streak';streakCard.appendChild(sd);streakCard.appendChild(sl);page.appendChild(streakCard);
-  // Notif card
   const notifCard=mk('div','analytics-card');const nt=mk('div','analytics-title');nt.textContent='Notifications';notifCard.appendChild(nt);
   const ns=mk('div');ns.style.cssText='font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.6';ns.textContent=notifGranted?'Desktop notifications are enabled. You will be notified 5 minutes before and at the start of each lesson.':'Enable desktop notifications to get reminders before lessons and revision sessions.';notifCard.appendChild(ns);
   if(!notifGranted){const nb2=btn('Enable Notifications','btn-primary',async()=>{const ok=await requestNotifications();if(ok)render();else nb2.textContent='Not supported';});notifCard.appendChild(nb2);}
@@ -923,10 +932,8 @@ function renderBrainMap(){
   const page=mk('div','brain-page');
   const title=mk('div','section-title');title.textContent='Brain Map';title.style.marginBottom='16px';page.appendChild(title);
   const wrap=mk('div','brain-wrap');
-  // SVG brain
   const svgCard=mk('div','brain-svg-card');
   const a=STATE.data.analytics;const st=a.subjectTotals||{};const maxVal=Math.max(1,...Object.values(st));
-  // Map subjects to brain regions
   const regions=[
     {id:'maths',  name:'Maths',    colour:'yellow', cx:190, cy:90,  r:52},
     {id:'english',name:'English',  colour:'pink',   cx:310, cy:80,  r:48},
@@ -936,19 +943,15 @@ function renderBrainMap(){
     {id:'re',     name:'RE',       colour:'purple', cx:250, cy:255, r:38},
   ];
   let svgContent='<svg viewBox="0 0 500 340" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto">';
-  // Brain outline
   svgContent+=`<ellipse cx="250" cy="175" rx="220" ry="160" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>`;
   svgContent+=`<ellipse cx="250" cy="175" rx="180" ry="130" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1" stroke-dasharray="4,4"/>`;
   svgContent+=`<line x1="250" y1="20" x2="250" y2="330" stroke="rgba(255,255,255,.06)" stroke-width="1" stroke-dasharray="3,5"/>`;
-  // Regions
   regions.forEach(reg=>{
     const subjMatch=STATE.data.subjects.find(s=>s.name.toLowerCase().includes(reg.id)||s.id===reg.id||s.id.includes(reg.id));
     const sname=subjMatch?subjMatch.name:reg.name;const count=st[sname]||0;
     const c=getColour(reg.colour);const intensity=count?Math.min(0.9,(count/maxVal)*0.8+0.1):0.08;
-    const pulse=count>0?'0.7s':'';
     svgContent+=`<circle cx="${reg.cx}" cy="${reg.cy}" r="${reg.r}" fill="${c.hex.replace('#','rgba(')}${hexToRGB(c.hex)},${intensity})" stroke="${c.hex}" stroke-width="1.5" opacity="0.9"/>`;
     if(count>0){svgContent+=`<circle cx="${reg.cx}" cy="${reg.cy}" r="${reg.r+6}" fill="none" stroke="${c.hex}" stroke-width="0.5" opacity="0.3"/>`;}
-    // Label
     const shortName=reg.name.length>7?reg.name.slice(0,7)+'…':reg.name;
     svgContent+=`<text x="${reg.cx}" y="${reg.cy-4}" text-anchor="middle" fill="white" font-size="9" font-weight="700" font-family="Inter,sans-serif">${shortName}</text>`;
     svgContent+=`<text x="${reg.cx}" y="${reg.cy+9}" text-anchor="middle" fill="rgba(255,255,255,.6)" font-size="8" font-family="Inter,sans-serif">${count} done</text>`;
@@ -958,7 +961,6 @@ function renderBrainMap(){
   const svgNote=mk('div');svgNote.style.cssText='font-size:11px;color:var(--text3);margin-top:12px;line-height:1.5';svgNote.textContent='Brighter = more sessions completed in that subject';
   svgCard.appendChild(svgNote);
   wrap.appendChild(svgCard);
-  // Legend with bars
   const legend=mk('div','brain-legend');const lt=mk('div','brain-legend-title');lt.textContent='Subject Progress';legend.appendChild(lt);
   const allSubjectTotals=WEEKEND_SUBJECTS.map(ws=>{const subj=STATE.data.subjects.find(s=>s.name.toLowerCase().includes(ws.id)||s.id===ws.id||s.id.includes(ws.id));const sname=subj?subj.name:ws.name;const count=st[sname]||0;return{...ws,sname,count};}).sort((a,b)=>b.count-a.count);
   const maxCount=Math.max(1,...allSubjectTotals.map(s=>s.count));
@@ -1003,7 +1005,6 @@ function buildSlotModal(box,slot,isPast){
     const btns=mk('div','modal-btns');
     const rb=btn('Remove','btn-danger',()=>{const sn=STATE.data.subjects.find(s=>s.id===slot.subject)?.name||'slot';pushUndo(`remove ${sn}`);setData({slots:STATE.data.slots.filter(s=>s.id!==slot.id)});closeModal();showToast(`Removed ${sn}`,'Undo',doUndo);});
     const sb=btn('Save','btn-primary',()=>{
-      // Record analytics if newly done
       if(ld&&!slot.done)recordSlotDone({...slot,subject:ls});
       pushUndo('edit slot');setData({slots:STATE.data.slots.map(s=>s.id===slot.id?{...s,done:ld,note:ln,subject:ls}:s)});closeModal();
     });btns.appendChild(rb);btns.appendChild(sb);box.appendChild(btns);
@@ -1033,7 +1034,6 @@ function buildSyncModal(box){
 function renderSettings(){
   const wrap=mk('div','settings-wrap');const bd=mk('div','settings-backdrop');bd.onclick=()=>setState({showSettings:false});wrap.appendChild(bd);
   const panel=mk('div','settings-panel');const hdr=mk('div','settings-header');const ht=mk('span');ht.textContent='Settings';const cb=mk('button','modal-close-btn');cb.innerHTML='&times;';cb.style.position='static';cb.onclick=()=>setState({showSettings:false});hdr.appendChild(ht);hdr.appendChild(cb);panel.appendChild(hdr);
-  // BG section
   const bgSec=mk('div','settings-section');const bgl=mk('div','settings-section-label');bgl.textContent='Background';bgSec.appendChild(bgl);
   const bgo=mk('div','bg-options');
   const so=mk('button',`bg-option${STATE.data.bgType==='solid'?' active':''}`);so.innerHTML='<div class="bg-option-icon">🎨</div><div class="bg-option-label">Colour</div>';so.onclick=()=>{document.querySelectorAll('.bg-option').forEach(o=>o.classList.remove('active'));so.classList.add('active');setData({bgType:'solid'});};
@@ -1045,10 +1045,8 @@ function renderSettings(){
   bgSec.appendChild(upb);bgSec.appendChild(pi);
   if(STATE.data.bgType==='photo'&&STATE.bgImageData){const clr=btn('Remove photo','btn-ghost',()=>{STATE.bgImageData=null;saveBgImage(null);setData({bgType:'solid'});});clr.style.cssText='width:100%;margin-top:8px;justify-content:center';bgSec.appendChild(clr);}
   panel.appendChild(bgSec);
-  // Theme
   const ts=mk('div','settings-section');const tl=mk('div','settings-section-label');tl.textContent='Theme';ts.appendChild(tl);
   const tg=mk('div','theme-grid');THEMES.forEach(t=>{const tile=mk('button',`theme-tile${STATE.data.theme===t.id?' active':''}`);tile.innerHTML=`<div class="theme-preview" style="background:${t.bg}"></div><div class="theme-name">${t.name}</div>`;tile.onclick=()=>setData({theme:t.id,bgColour:t.bg,bgType:'solid'});tg.appendChild(tile);});ts.appendChild(tg);panel.appendChild(ts);
-  // Subjects
   const subSec=mk('div','settings-section');const sl=mk('div','settings-section-label');sl.textContent='Subjects';subSec.appendChild(sl);
   const subList=mk('div','subject-list');STATE.data.subjects.forEach(s=>{const c=getColour(s.colour);const row=mk('div','subject-row');const dot=mk('div','subject-dot');dot.style.background=c.hex;const nm=mk('span','subject-name');nm.textContent=s.name;const tl2=mk('span','subject-tool');tl2.textContent=s.tool;const db=mk('button','subject-del');db.textContent='✕';db.onclick=()=>{pushUndo(`remove "${s.name}"`);setData({subjects:STATE.data.subjects.filter(x=>x.id!==s.id)});showToast(`Removed "${s.name}"`, 'Undo', doUndo);};row.appendChild(dot);row.appendChild(nm);row.appendChild(tl2);row.appendChild(db);subList.appendChild(row);});subSec.appendChild(subList);
   let nName='',nCol='blue';const ar=mk('div','add-subject-row');const ni=mk('input','form-input');ni.placeholder='New subject…';ni.oninput=e=>nName=e.target.value;ni.addEventListener('keydown',e=>{if(e.key==='Enter')doAdd();});
@@ -1058,18 +1056,6 @@ function renderSettings(){
   ar.appendChild(ni);ar.appendChild(sw);ar.appendChild(ab);subSec.appendChild(ar);panel.appendChild(subSec);
   const sob=btn('Sign out','btn-ghost btn-full',()=>{if(confirm(`Sign out of "${STATE.username}"?`))setState({screen:'login',username:null,weekOffset:0,modal:null,showSettings:false});});sob.style.marginTop='8px';panel.appendChild(sob);
   wrap.appendChild(panel);return wrap;
-}
-
-// ═══ CLOCK ════════════════════════════════════════════
-function updateClock(){const e=document.getElementById('live-clock');if(!e)return;const n=new Date();e.textContent=String(n.getUTCHours()).padStart(2,'0')+':'+String(n.getUTCMinutes()).padStart(2,'0')+':'+String(n.getUTCSeconds()).padStart(2,'0');}
-let _clockInt=null;
-function startClock(){
-  if(_clockInt)clearInterval(_clockInt);
-  _clockInt=setInterval(()=>{
-    updateClock();
-    const nu=document.getElementById('next-up-card');if(nu){const f=buildNextUpCard();if(f)nu.replaceWith(f);else nu.remove();}
-    checkAutoSave();checkNotifications();
-  },1000);
 }
 
 // ═══ TOAST ════════════════════════════════════════════
