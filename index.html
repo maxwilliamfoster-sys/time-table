@@ -537,7 +537,7 @@ function checkNotifications(){
       sendNotification(`${name} is starting now`,slot.type==='lesson'?'Your online lesson is live':'Time to revise!',key0);
     }
   });
-  const h=new Date().getUTCHours();
+  const h=new Date().getHours();
   if(!_notifSentThisMinute._h||_notifSentThisMinute._h!==h){
     const keep={_h:h};Object.keys(_notifSentThisMinute).forEach(k=>{if(k.startsWith('5-')||k.startsWith('0-')){const id=k.slice(2);if(todaySlots.some(s=>s.id===id))keep[k]=true;}});
     _notifSentThisMinute=keep;
@@ -671,8 +671,8 @@ function fg(lbl,inp){const g=mk('div','form-group');const l=mk('label','form-lab
 
 // ═══ TIME ═════════════════════════════════════════════
 function timeToMins(t){const p=t.split(':');return parseInt(p[0],10)*60+parseInt(p[1]||'0',10);}
-function gmtNowMins(){const n=new Date();return n.getUTCHours()*60+n.getUTCMinutes();}
-function gmtDayIndex(){const d=new Date().getUTCDay();return(d===0||d===6)?-1:d-1;}
+function gmtNowMins(){const n=new Date();return n.getHours()*60+n.getMinutes();}
+function gmtDayIndex(){const d=new Date().getDay();return(d===0||d===6)?-1:d-1;}
 function getWeekDates(off){const now=new Date();const ld=now.getDay();const diff=ld===0?-6:1-ld;const mon=new Date(now);mon.setDate(now.getDate()+diff+(off*7));mon.setHours(0,0,0,0);return[0,1,2,3,4].map(i=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});}
 function ordinal(n){const s=['th','st','nd','rd'];const v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
 function fmtDayDate(date){return ordinal(date.getDate())+' '+date.toLocaleDateString('en-GB',{month:'short'});}
