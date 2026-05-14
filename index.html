@@ -458,6 +458,18 @@ input,button,select,textarea{font-family:inherit}
 </style>
 </head>
 <body>
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';
+import{getFirestore,doc,getDoc,setDoc,onSnapshot}from'https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js';
+const firebaseConfig={apiKey:'AIzaSyAXYqRAUw3K02W4C6D0eHGdjP66KcgdRkU',authDomain:'gcse-planner.firebaseapp.com',projectId:'gcse-planner',storageBucket:'gcse-planner.firebasestorage.app',messagingSenderId:'16842707466',appId:'1:16842707466:web:2753fb2a281944b3a585f3'};
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const uDoc=u=>doc(db,'users',u.toLowerCase());
+window._fsGet=u=>getDoc(uDoc(u));
+window._fsSet=(u,d)=>setDoc(uDoc(u),d);
+window._fsListen=(u,cb)=>onSnapshot(uDoc(u),cb);
+window.dispatchEvent(new Event('firebase-ready'));
+</script>
 <div class="bg-layer" id="bgLayer"></div>
 <div class="bg-overlay" id="bgOverlay"></div>
 <div id="root"></div>
@@ -876,7 +888,11 @@ const uid=()=>'u'+Math.random().toString(36).slice(2)+Date.now().toString(36);
 
 // ═══ STORAGE ══════════════════════════════════════════
 function loadUserData(u){try{const r=localStorage.getItem('gcse_'+u);return r?JSON.parse(r):null;}catch{return null;}}
-function saveUserData(u,d){try{localStorage.setItem('gcse_'+u,JSON.stringify(d));}catch(e){}}
+function saveUserData(u,d){
+  d._lastModified=Date.now();
+  try{localStorage.setItem('gcse_'+u,JSON.stringify(d));}catch(e){}
+  if(window._fsSet&&u)window._fsSet(u,d).catch(()=>{});
+}
 function getKnownUsers(){try{return JSON.parse(localStorage.getItem('gcse_users')||'[]');}catch{return[];}}
 function addKnownUser(u){const users=getKnownUsers();if(!users.includes(u)){users.unshift(u);localStorage.setItem('gcse_users',JSON.stringify(users.slice(0,5)));}}
 function loadBgImage(){try{return localStorage.getItem('gcse_bg_image')||null;}catch{return null;}}
@@ -1170,15 +1186,58 @@ function renderLogin(){
   const note=mk('p','login-note');note.textContent='Stored locally in your browser. No account needed.';card.appendChild(note);
   wrap.appendChild(card);return wrap;
 }
-function doLogin(username){
+let _fsUnsub=null;
+async function doLogin(username){
   addKnownUser(username);STATE.bgImageData=loadBgImage();STATE.username=username;
   const saved=loadUserData(username)||getDefaultData();
   if(!saved.analytics)saved.analytics={daily:{},weekly:{},monthly:{},subjectTotals:{}};
   if(!saved.periodicStats)saved.periodicStats={};
   STATE.data=saved;STATE.screen='app';
-  if(!STATE.data.weekLabel){STATE.data.weekLabel=getAutoWeekLabel();if(username)saveUserData(username,STATE.data);}
+  if(!STATE.data.weekLabel){STATE.data.weekLabel=getAutoWeekLabel();}
   requestNotifications();
   render();
+
+  // Fetch latest from Firestore and use if newer than local copy
+  if(window._fsGet){
+    try{
+      const snap=await window._fsGet(username);
+      if(snap.exists()){
+        const remote=snap.data();
+        if(!remote.analytics)remote.analytics={daily:{},weekly:{},monthly:{},subjectTotals:{}};
+        if(!remote.periodicStats)remote.periodicStats={};
+        const remoteTs=remote._lastModified||0;
+        const localTs=STATE.data._lastModified||0;
+        if(remoteTs>localTs){
+          STATE.data=remote;
+          try{localStorage.setItem('gcse_'+username,JSON.stringify(remote));}catch(e){}
+          render();showToast('Synced from cloud ☁️',null);
+        } else {
+          // Push local data up if it's newer or cloud has nothing meaningful
+          window._fsSet(username,STATE.data).catch(()=>{});
+        }
+      } else {
+        // First time in cloud — upload local data
+        window._fsSet(username,STATE.data).catch(()=>{});
+      }
+    }catch(e){console.warn('Firestore fetch failed, using local data',e);}
+
+    // Real-time listener — updates app when another device saves
+    if(_fsUnsub)_fsUnsub();
+    _fsUnsub=window._fsListen(username,snap=>{
+      if(!snap.exists()||!STATE.username)return;
+      const remote=snap.data();
+      const remoteTs=remote._lastModified||0;
+      const localTs=STATE.data._lastModified||0;
+      if(remoteTs>localTs+2000){
+        if(!remote.analytics)remote.analytics={daily:{},weekly:{},monthly:{},subjectTotals:{}};
+        if(!remote.periodicStats)remote.periodicStats={};
+        STATE.data=remote;
+        try{localStorage.setItem('gcse_'+username,JSON.stringify(remote));}catch(e){}
+        render();showToast('Synced from another device ☁️',null);
+      }
+    });
+  }
+
   checkAutoSave();
   scheduleSWNotifications();
 }
