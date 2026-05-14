@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="115" fill="#000"/>
+  <rect x="30" y="30" width="452" height="452" rx="90" fill="#0a1a2e"/>
+  <text x="256" y="290" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="260" font-weight="800" fill="#0a84ff" text-anchor="middle" dominant-baseline="auto">G</text>
+  <text x="256" y="390" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="76" font-weight="600" fill="rgba(255,255,255,0.6)" text-anchor="middle">GCSE</text>
+</svg>

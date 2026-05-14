@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>GCSE Planner</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GCSE">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -15,7 +20,10 @@
   --orange:#FF9F0A;--purple:#BF5AF2;--teal:#40C8E0;--indigo:#5E5CE6;
   --r:16px;--r2:12px;--r3:10px;
 }
-body{font-family:'Inter',-apple-system,sans-serif;font-size:15px;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Inter',-apple-system,sans-serif;font-size:15px;background:var(--bg);color:var(--text);min-height:100vh;min-height:-webkit-fill-available;overflow-x:hidden;-webkit-font-smoothing:antialiased;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+*{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+input,button,select,textarea{font-family:inherit}
 .bg-layer{position:fixed;inset:0;z-index:0;background-size:cover;background-position:center;transition:opacity .4s}
 .bg-overlay{position:fixed;inset:0;z-index:1;background:var(--bg);transition:opacity .4s}
 #root{position:relative;z-index:2}
@@ -913,9 +921,26 @@ async function requestNotifications(){
   }
   return false;
 }
-function sendNotification(title,body,tag){
+async function sendNotification(title,body,tag){
   if(!notifGranted||Notification.permission!=='granted')return;
-  try{new Notification(title,{body,icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📚</text></svg>',tag:tag||'gcse'});}catch(e){}
+  try{
+    if('serviceWorker' in navigator){
+      const reg=await navigator.serviceWorker.ready;
+      reg.showNotification(title,{body,icon:'./icon.svg',tag:tag||'gcse',requireInteraction:false});
+    }else{new Notification(title,{body,tag:tag||'gcse'});}
+  }catch(e){}
+}
+
+function scheduleSWNotifications(){
+  if(!STATE.username||!('serviceWorker' in navigator)||!navigator.serviceWorker.controller)return;
+  const todayIdx=gmtDayIndex();if(todayIdx<0)return;
+  const now=new Date();
+  const lessons=STATE.data.slots.filter(s=>s.day===todayIdx).map(s=>{
+    const[h,m]=(s.time||'00:00').split(':').map(Number);
+    const t=new Date(now.getFullYear(),now.getMonth(),now.getDate(),h,m,0);
+    return{id:s.id,subject:s.subject||'Lesson',time:s.time,timestamp:t.getTime(),isLesson:s.type==='lesson'};
+  }).filter(l=>l.timestamp>Date.now());
+  navigator.serviceWorker.controller.postMessage({type:'SCHEDULE_LESSONS',lessons});
 }
 
 let _notifSentThisMinute={};
@@ -1155,6 +1180,7 @@ function doLogin(username){
   requestNotifications();
   render();
   checkAutoSave();
+  scheduleSWNotifications();
 }
 
 // ═══ TOPBAR ═══════════════════════════════════════════
@@ -1948,6 +1974,28 @@ window.addEventListener('visibilitychange',()=>{
 });
 
 // ═══ BOOT ═════════════════════════════════════════════
+(function generateAppleTouchIcon(){
+  try{
+    const c=document.createElement('canvas');c.width=180;c.height=180;
+    const x=c.getContext('2d');
+    x.fillStyle='#000';x.fillRect(0,0,180,180);
+    x.fillStyle='#0a1a2e';x.beginPath();x.roundRect(8,8,164,164,32);x.fill();
+    x.fillStyle='#0a84ff';x.font='bold 100px -apple-system,system-ui,sans-serif';
+    x.textAlign='center';x.textBaseline='alphabetic';x.fillText('G',90,118);
+    x.fillStyle='rgba(255,255,255,0.6)';x.font='600 28px -apple-system,system-ui,sans-serif';
+    x.fillText('GCSE',90,155);
+    const l=document.createElement('link');l.rel='apple-touch-icon';l.href=c.toDataURL('image/png');
+    document.head.appendChild(l);
+  }catch(e){}
+})();
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').then(reg=>{
+    navigator.serviceWorker.addEventListener('controllerchange',()=>scheduleSWNotifications());
+    if(navigator.serviceWorker.controller)scheduleSWNotifications();
+  }).catch(()=>{});
+}
+
 STATE.bgImageData=loadBgImage();
 if(Notification.permission==='granted')notifGranted=true;
 render();
