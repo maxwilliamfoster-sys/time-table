@@ -1,9 +1,9 @@
-const CACHE = 'gcse-v1';
+const CACHE = 'gcse-v2';
 const pendingTimers = [];
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(['./', './index.html', './manifest.json', './icon.svg']))
+    caches.open(CACHE).then(c => c.addAll(['./index.html', './manifest.json', './icon.svg']))
       .then(() => self.skipWaiting())
   );
 });
@@ -18,13 +18,26 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  // Only handle same-origin requests — let Firebase/Google CDN requests pass through untouched
+  if (!e.request.url.startsWith(self.location.origin)) return;
+
+  // Network-first for HTML so updates are always picked up
+  if (e.request.headers.get('accept') && e.request.headers.get('accept').includes('text/html')) {
+    e.respondWith(
+      fetch(e.request).then(res => {
+        const clone = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+        return res;
+      }).catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
+  // Cache-first for other same-origin assets (manifest, icon, sw itself)
   e.respondWith(
     caches.match(e.request).then(cached => {
       const network = fetch(e.request).then(res => {
-        if (res.ok) {
-          const clone = res.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
-        }
+        if (res.ok) caches.open(CACHE).then(c => c.put(e.request, res.clone()));
         return res;
       }).catch(() => cached);
       return cached || network;
