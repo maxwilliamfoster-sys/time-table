@@ -26,7 +26,8 @@ body{font-family:'Inter',-apple-system,sans-serif;font-size:15px;background:var(
 input,button,select,textarea{font-family:inherit;max-width:100%}
 .bg-layer{position:fixed;inset:0;z-index:0;background-size:cover;background-position:center;transition:opacity .4s}
 .bg-overlay{position:fixed;inset:0;z-index:1;background:var(--bg);transition:opacity .4s}
-#root{position:relative;z-index:2}
+#root{position:relative;z-index:2;overflow-x:hidden;max-width:100vw}
+.slot-card{touch-action:pan-y}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes scaleIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
@@ -1349,17 +1350,21 @@ function renderSlotCard(slot,isPast){
   else{badge=mk('div','slot-badge');badge.style.cssText=`background:${c.tag};color:${c.hex}`;badge.textContent=subj?.tag||'Revision';}
   card.appendChild(bar);card.appendChild(tick);card.appendChild(name);card.appendChild(time);card.appendChild(badge);
   if(slot.note){const np=mk('div','slot-note-preview');np.textContent='📝 '+slot.note;card.appendChild(np);}
-  let _tapTimer=null;
-  card.onclick=()=>{
-    if(isPast){openModal({type:'slot',slot:{...slot},isPast});return;}
-    if(_tapTimer){
-      clearTimeout(_tapTimer);_tapTimer=null;
+  // Desktop: 200ms window lets dblclick cancel the single-click modal
+  let _st=null;
+  card.onclick=()=>{if(_st){clearTimeout(_st);_st=null;}  _st=setTimeout(()=>{_st=null;openModal({type:'slot',slot:{...slot},isPast});},200);};
+  card.ondblclick=e=>{e.stopPropagation();clearTimeout(_st);_st=null;if(isPast)return;pushUndo('toggle done');setData({slots:STATE.data.slots.map(s=>s.id===slot.id?{...s,done:!s.done}:s)});};
+  // iOS: touchend double-tap
+  let _lt=0;
+  card.addEventListener('touchend',e=>{
+    const now=Date.now();
+    if(now-_lt<350){
+      _lt=0;e.preventDefault();clearTimeout(_st);_st=null;
+      if(isPast)return;
       pushUndo('toggle done');
       setData({slots:STATE.data.slots.map(s=>s.id===slot.id?{...s,done:!s.done}:s)});
-    } else {
-      _tapTimer=setTimeout(()=>{_tapTimer=null;openModal({type:'slot',slot:{...slot},isPast});},280);
-    }
-  };
+    }else{_lt=now;}
+  },{passive:false});
   return card;
 }
 
