@@ -938,7 +938,7 @@ async function requestNotifications(){
   return false;
 }
 async function sendNotification(title,body,tag){
-  if(!notifGranted||Notification.permission!=='granted')return;
+  if(!notifGranted||typeof Notification==='undefined'||Notification.permission!=='granted')return;
   try{
     if('serviceWorker' in navigator){
       const reg=await navigator.serviceWorker.ready;
@@ -2056,7 +2056,7 @@ if('serviceWorker' in navigator){
 }
 
 STATE.bgImageData=loadBgImage();
-if(Notification.permission==='granted')notifGranted=true;
+if(typeof Notification!=='undefined'&&Notification.permission==='granted')notifGranted=true;
 render();
 startClock();
 </script>
