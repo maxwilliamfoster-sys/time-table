@@ -477,6 +477,7 @@ window.dispatchEvent(new Event('firebase-ready'));
 <div id="weekend-root"></div>
 
 <script>
+window.onerror=function(msg,src,line,col){var r=document.getElementById('root');if(r)r.innerHTML='<div style="color:#ff453a;padding:24px;font-size:13px;font-family:monospace;line-height:1.6">Error: '+msg+'<br>Line: '+line+'</div>';return true;};
 // ═══ COLOURS ══════════════════════════════════════════
 const COLOURS=[
   {id:'blue',  hex:'#0A84FF',bg:'rgba(10,132,255,.12)',border:'rgba(10,132,255,.25)',tag:'rgba(10,132,255,.15)'},
