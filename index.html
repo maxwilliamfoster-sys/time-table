@@ -1658,10 +1658,14 @@ function renderElements(){
   const qa=mk('div');qa.id='pe-question-area';
   qa.appendChild(buildPEQuestionCard(PE.queue[PE.qIdx]||ELEMENTS[0].num));
   page.appendChild(qa);
-  // Overview grid
-  const ovLbl=mk('div');ovLbl.style.cssText='font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-top:20px;margin-bottom:8px';
-  ovLbl.textContent='All 118 Elements';page.appendChild(ovLbl);
-  const ov=mk('div','pe-overview');
+  // Overview grid (collapsed by default)
+  const ovToggle=mk('button','btn btn-ghost');ovToggle.style.cssText='font-size:12px;margin-top:16px;width:100%;justify-content:space-between;display:flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--r1)';
+  let ovOpen=false;
+  const ovArrow=mk('span');ovArrow.textContent='▸';
+  const ovLabel=mk('span');ovLabel.textContent='View all 118 elements';
+  ovToggle.appendChild(ovLabel);ovToggle.appendChild(ovArrow);
+  page.appendChild(ovToggle);
+  const ov=mk('div','pe-overview');ov.style.display='none';
   ELEMENTS.forEach(el=>{
     const s=stats[el.num]||{correct:0,wrong:0,stars:[]};
     const m2=_peMastered(s);
@@ -1675,6 +1679,7 @@ function renderElements(){
     buildPEStarDots(s,'sm').forEach(d=>dots.appendChild(d));
     cell.appendChild(num);cell.appendChild(sym);cell.appendChild(dots);ov.appendChild(cell);
   });
+  ovToggle.onclick=()=>{ovOpen=!ovOpen;ov.style.display=ovOpen?'grid':'none';ovArrow.textContent=ovOpen?'▾':'▸';ovLabel.textContent=ovOpen?'Hide elements':'View all 118 elements';};
   page.appendChild(ov);
   return page;
 }
