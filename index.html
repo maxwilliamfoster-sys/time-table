@@ -53,11 +53,19 @@ input,button,select,textarea{font-family:inherit;max-width:100%}
 .wnbtn:hover{color:var(--text)}
 .wnbtn:disabled{opacity:.2;cursor:default;pointer-events:none}
 .week-label{font-size:13px;font-weight:600;color:var(--text);min-width:80px;text-align:center}
-.top-right{display:flex;align-items:center;gap:6px}
+.top-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .icon-btn{background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:10px;padding:6px 12px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:5px;white-space:nowrap}
 .icon-btn:hover{background:rgba(255,255,255,.12);color:var(--text);border-color:var(--border2)}
 .icon-btn.pomo-btn{background:rgba(255,55,95,.12);border-color:rgba(255,55,95,.3);color:var(--pink)}
 .icon-btn.weekend-btn{background:rgba(48,209,88,.10);border-color:rgba(48,209,88,.3);color:var(--green)}
+@media(max-width:640px){
+  .clock-wrap{display:none}
+  .btn-lbl{display:none}
+  .icon-btn{padding:7px 9px;gap:0}
+  .undo-btn{display:none}
+  .logo{font-size:15px}
+  .week-label{min-width:64px;font-size:12px}
+}
 
 /* CLOCK — updated to show GMT */
 .clock-wrap{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0}
@@ -1269,11 +1277,11 @@ function renderTopbar(){
   right.appendChild(cw);
 
   const wb=mk('button',`icon-btn weekend-btn`);
-  wb.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Weekend';
+  wb.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="btn-lbl"> Weekend</span>';
   if(isWeekend())wb.style.cssText='background:rgba(48,209,88,.18);border-color:rgba(48,209,88,.5);color:var(--green)';
   wb.onclick=()=>setState({showWeekend:!STATE.showWeekend});right.appendChild(wb);
-  const pomob=mk('button','icon-btn pomo-btn');pomob.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Pomodoro';pomob.onclick=()=>setState({showPomo:!STATE.showPomo});right.appendChild(pomob);
-  const ub=mk('button','icon-btn');ub.textContent='↩';ub.title='Undo';if(!STATE.undoStack.length){ub.style.opacity='.25';ub.style.cursor='default';}ub.onclick=()=>{if(STATE.undoStack.length)doUndo();};right.appendChild(ub);
+  const pomob=mk('button','icon-btn pomo-btn');pomob.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="btn-lbl"> Pomodoro</span>';pomob.onclick=()=>setState({showPomo:!STATE.showPomo});right.appendChild(pomob);
+  const ub=mk('button','icon-btn undo-btn');ub.textContent='↩';ub.title='Undo';if(!STATE.undoStack.length){ub.style.opacity='.25';ub.style.cursor='default';}ub.onclick=()=>{if(STATE.undoStack.length)doUndo();};right.appendChild(ub);
   const setb=mk('button','icon-btn');setb.textContent='⚙';setb.onclick=()=>setState({showSettings:true});right.appendChild(setb);
   const av=mk('button','avatar-btn');av.textContent=STATE.username.slice(0,2).toUpperCase();av.onclick=()=>{if(confirm(`Sign out of "${STATE.username}"?`))setState({screen:'login',username:null,weekOffset:0,modal:null,showSettings:false});};right.appendChild(av);
   bar.appendChild(left);bar.appendChild(right);return bar;
