@@ -59,7 +59,7 @@ input,button,select,textarea{font-family:inherit;max-width:100%}
 .icon-btn.pomo-btn{background:rgba(255,55,95,.12);border-color:rgba(255,55,95,.3);color:var(--pink)}
 .icon-btn.weekend-btn{background:rgba(48,209,88,.10);border-color:rgba(48,209,88,.3);color:var(--green)}
 @media(max-width:640px){
-  .clock-wrap{display:none}
+  .clock-wrap{display:none!important}
   .btn-lbl{display:none}
   .icon-btn{padding:7px 9px;gap:0}
   .undo-btn{display:none}
@@ -1199,6 +1199,13 @@ function renderLogin(){
   wrap.appendChild(card);return wrap;
 }
 let _fsUnsub=null;
+function waitForFirebase(ms=6000){
+  if(window._fsGet)return Promise.resolve(true);
+  return new Promise(res=>{
+    const t=setTimeout(()=>res(false),ms);
+    window.addEventListener('firebase-ready',()=>{clearTimeout(t);res(true);},{once:true});
+  });
+}
 async function doLogin(username){
   addKnownUser(username);STATE.bgImageData=loadBgImage();STATE.username=username;
   const saved=loadUserData(username)||getDefaultData();
@@ -1209,7 +1216,8 @@ async function doLogin(username){
   requestNotifications();
   render();
 
-  // Fetch latest from Firestore and use if newer than local copy
+  // Wait for Firebase module to load, then fetch latest from Firestore
+  await waitForFirebase();
   if(window._fsGet){
     try{
       const snap=await window._fsGet(username);
