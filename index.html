@@ -333,6 +333,83 @@ body{font-family:'Inter',-apple-system,sans-serif;font-size:15px;background:var(
 .brain-subject-bar-track{height:5px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;margin-top:5px}
 .brain-subject-bar-fill{height:100%;border-radius:99px;transition:width .8s cubic-bezier(.34,1.56,.64,1)}
 .brain-subject-pct{font-size:13px;font-weight:700;color:var(--text);flex-shrink:0}
+
+/* VOCAB CARD */
+.vocab-card{border-radius:var(--r);padding:18px 22px;margin-bottom:14px;background:var(--s1);border:1px solid var(--border);animation:fadeUp .3s ease both;position:relative;overflow:hidden}
+.vocab-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,var(--yellow),var(--orange))}
+.vocab-header{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.vocab-header-dot{width:6px;height:6px;border-radius:50%;background:var(--yellow);flex-shrink:0}
+.vocab-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:700px){.vocab-grid{grid-template-columns:1fr}}
+.vocab-item{background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px}
+.vocab-word{font-size:14px;font-weight:700;color:var(--yellow);margin-bottom:5px;letter-spacing:-.2px}
+.vocab-def{font-size:12px;color:var(--text2);line-height:1.6}
+
+/* FLASHCARDS PAGE */
+.fc-page{padding:20px 16px 100px;max-width:1100px;margin:0 auto}
+.fc-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+.fc-filter-select{padding:9px 12px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r3);color:var(--text);font-size:13px;font-family:inherit;outline:none;-webkit-appearance:none;appearance:none;cursor:pointer}
+.fc-section{margin-bottom:24px}
+.fc-section-header{font-size:12px;font-weight:700;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.fc-section-count{font-size:11px;font-weight:600;background:rgba(255,255,255,.08);border-radius:4px;padding:2px 7px;color:var(--text3)}
+.fc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.fc-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;cursor:pointer;transition:border-color .15s,transform .12s;position:relative;min-height:90px;display:flex;flex-direction:column;gap:8px}
+.fc-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.fc-card-front{font-size:13px;font-weight:600;color:var(--text);line-height:1.5;flex:1}
+.fc-card-footer{display:flex;gap:6px;justify-content:space-between;align-items:center;margin-top:4px}
+.fc-card-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;padding:3px 6px;border-radius:4px;transition:color .15s;font-family:inherit}
+.fc-card-del:hover{color:var(--pink)}
+.fc-card-known{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:4px}
+.fc-card-known.yes{background:rgba(48,209,88,.12);color:var(--green)}
+.fc-card-known.no{background:rgba(255,255,255,.06);color:var(--text3)}
+.fc-empty{text-align:center;color:var(--text3);padding:40px 20px;font-size:13px;border:1px dashed rgba(255,255,255,.1);border-radius:var(--r);margin-bottom:14px;line-height:1.8}
+.fc-stats-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.fc-stat{background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);padding:12px 16px;flex:1;min-width:90px;text-align:center}
+.fc-stat-num{font-size:24px;font-weight:700;color:var(--text);letter-spacing:-1px;line-height:1}
+.fc-stat-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+/* STUDY MODE */
+.fc-study-wrap{display:flex;flex-direction:column;align-items:center;padding:20px 16px 100px;max-width:580px;margin:0 auto}
+.fc-study-header{display:flex;align-items:center;gap:10px;width:100%;margin-bottom:20px}
+.fc-study-progress{flex:1;height:4px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}
+.fc-study-fill{height:100%;border-radius:99px;background:var(--accent);transition:width .4s cubic-bezier(.34,1.56,.64,1)}
+.fc-study-counter{font-size:12px;color:var(--text3);font-weight:600;white-space:nowrap}
+.fc-flip-card{width:100%;min-height:240px;background:var(--s1);border:1px solid var(--border2);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;padding:32px;text-align:center;margin-bottom:20px;transition:border-color .2s,background .2s,transform .12s;position:relative;overflow:hidden}
+.fc-flip-card:hover{transform:translateY(-2px)}
+.fc-flip-card.revealed{border-color:rgba(10,132,255,.4);background:rgba(10,132,255,.05)}
+.fc-flip-side{position:absolute;top:14px;left:18px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3)}
+.fc-flip-text{font-size:20px;font-weight:600;color:var(--text);line-height:1.5;letter-spacing:-.3px}
+.fc-flip-hint{font-size:11px;color:var(--text3);margin-top:12px}
+.fc-answer-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;margin-bottom:16px}
+.fc-answer-btns .btn{justify-content:center;font-size:13px;padding:13px}
+.fc-skip-row{display:flex;justify-content:center;width:100%}
+.fc-result-card{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:40px 32px;text-align:center;width:100%;margin-bottom:20px}
+.fc-result-score{font-size:54px;font-weight:700;letter-spacing:-2px;color:var(--text);line-height:1}
+.fc-result-sub{font-size:14px;color:var(--text2);margin-top:6px;margin-bottom:20px}
+.fc-result-emoji{font-size:40px;margin-bottom:12px}
+.fc-result-btns{display:flex;flex-direction:column;gap:8px;width:100%}
+
+/* WEEKEND RESOURCES */
+.wt-resources{margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.wt-res-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.wt-res-links{display:flex;flex-direction:column;gap:5px}
+.wt-res-link{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--r3);text-decoration:none;transition:all .15s;cursor:pointer}
+.wt-res-link:hover{background:rgba(255,255,255,.07);border-color:var(--border2)}
+.wt-res-icon{font-size:14px;flex-shrink:0}
+.wt-res-body{flex:1;min-width:0}
+.wt-res-name{font-size:12px;font-weight:600;color:var(--text)}
+.wt-res-desc{font-size:10px;color:var(--text3);margin-top:1px}
+.wt-res-arrow{font-size:10px;color:var(--text3);flex-shrink:0}
+
+/* HOLIDAY BANNERS */
+.holiday-banner{background:rgba(255,214,10,.07);border:1px solid rgba(255,214,10,.25);border-radius:var(--r2);padding:13px 18px;margin-bottom:12px;display:flex;align-items:center;gap:14px}
+.holiday-banner-icon{font-size:24px;flex-shrink:0}
+.holiday-banner-body{flex:1;min-width:0}
+.holiday-banner-title{font-size:14px;font-weight:700;color:var(--yellow);line-height:1}
+.holiday-banner-sub{font-size:12px;color:var(--text2);margin-top:4px;line-height:1.5}
+.next-hol-strip{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:12px;color:var(--text3);flex-wrap:wrap}
+.next-hol-chip{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap}
+.next-hol-days{font-size:13px;font-weight:700;color:var(--text)}
 </style>
 </head>
 <body>
@@ -369,6 +446,40 @@ const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday'];
 const DAYS_SHORT=['Mon','Tue','Wed','Thu','Fri'];
 const LESSON_DURATION=45;
 
+// ═══ IVC TERM DATES ═══════════════════════════════════
+const IVC_TERMS=[
+  // 2025–2026
+  {label:'Autumn Half Term',    emoji:'🍂', start:'2025-10-23',end:'2025-10-31', resume:'3 Nov 2025'},
+  {label:'Christmas Holidays',  emoji:'🎄', start:'2025-12-13',end:'2026-01-04', resume:'5 Jan 2026'},
+  {label:'February Half Term',  emoji:'❄️',  start:'2026-02-16',end:'2026-02-20', resume:'23 Feb 2026'},
+  {label:'Easter Holidays',     emoji:'🐣', start:'2026-03-28',end:'2026-04-12', resume:'13 Apr 2026'},
+  {label:'May Bank Holiday',    emoji:'🏛️',  start:'2026-05-04',end:'2026-05-04', resume:'5 May 2026'},
+  {label:'May Half Term',       emoji:'☀️',  start:'2026-05-25',end:'2026-05-29', resume:'1 Jun 2026'},
+  {label:'Summer Holidays',     emoji:'🌞', start:'2026-07-18',end:'2026-09-01', resume:'2 Sep 2026'},
+  // 2026–2027
+  {label:'Autumn Half Term',    emoji:'🍂', start:'2026-10-22',end:'2026-10-30', resume:'2 Nov 2026'},
+  {label:'Christmas Holidays',  emoji:'🎄', start:'2026-12-12',end:'2027-01-03', resume:'4 Jan 2027'},
+  {label:'February Half Term',  emoji:'❄️',  start:'2027-02-15',end:'2027-02-19', resume:'22 Feb 2027'},
+  {label:'Easter Holidays',     emoji:'🐣', start:'2027-03-26',end:'2027-04-11', resume:'12 Apr 2027'},
+  {label:'May Bank Holiday',    emoji:'🏛️',  start:'2027-05-03',end:'2027-05-03', resume:'4 May 2027'},
+  {label:'May Half Term',       emoji:'☀️',  start:'2027-05-31',end:'2027-06-04', resume:'7 Jun 2027'},
+  {label:'Summer Holidays',     emoji:'🌞', start:'2027-07-17',end:'2027-09-01', resume:'2 Sep 2027'},
+];
+function _isoToDate(s){const[y,m,d]=s.split('-').map(Number);const dt=new Date(y,m-1,d);dt.setHours(0,0,0,0);return dt;}
+function getCurrentHoliday(){
+  const now=new Date();now.setHours(0,0,0,0);
+  return IVC_TERMS.find(t=>now>=_isoToDate(t.start)&&now<=_isoToDate(t.end))||null;
+}
+function getNextHoliday(){
+  const now=new Date();now.setHours(0,0,0,0);
+  return IVC_TERMS.find(t=>_isoToDate(t.start)>now)||null;
+}
+function daysUntil(dateStr){
+  const now=new Date();now.setHours(0,0,0,0);
+  return Math.round((_isoToDate(dateStr)-now)/86400000);
+}
+function fmtISODate(s){return _isoToDate(s).toLocaleDateString('en-GB',{day:'numeric',month:'short'});}
+
 // ═══ QUOTES ═══════════════════════════════════════════
 const QUOTES=[
   {text:'The secret of getting ahead is getting started.',author:'Socrates (attr.)'},
@@ -391,6 +502,165 @@ function getTodayQuote(){
   const d=new Date();
   const idx=(d.getFullYear()*366+d.getMonth()*31+d.getDate())%QUOTES.length;
   return QUOTES[idx];
+}
+
+// ═══ VOCABULARY WORDS ═════════════════════════════════
+const VOCAB_WORDS=[
+  {word:'Aberration',def:'A departure from what is normal or expected; an anomaly'},
+  {word:'Acrimony',def:'Bitterness or ill feeling, especially in speech or manner'},
+  {word:'Acumen',def:'The ability to make good judgements and quick, sharp decisions'},
+  {word:'Adulation',def:'Excessive admiration or praise given to someone'},
+  {word:'Altruistic',def:'Showing selfless concern for the well-being of others'},
+  {word:'Ambiguous',def:'Open to more than one interpretation; unclear in meaning'},
+  {word:'Ambivalent',def:'Having mixed or contradictory feelings about something'},
+  {word:'Anachronism',def:'Something that belongs to a different period in time than depicted'},
+  {word:'Anomaly',def:'Something that deviates from what is standard or expected'},
+  {word:'Apathy',def:'Lack of interest, enthusiasm, or concern about something'},
+  {word:'Arduous',def:'Involving great effort and difficulty; strenuous and challenging'},
+  {word:'Articulate',def:'Able to express thoughts and feelings clearly and effectively'},
+  {word:'Assertion',def:'A confident, forceful statement presented as fact'},
+  {word:'Attrition',def:'The gradual reduction of something through sustained pressure'},
+  {word:'Audacious',def:'Showing willingness to take bold risks; daring and unashamed'},
+  {word:'Authoritarian',def:'Favouring or enforcing strict, unquestioning obedience to authority'},
+  {word:'Autonomous',def:'Having the freedom to govern or act independently'},
+  {word:'Axiom',def:'A statement accepted as obviously true without requiring proof'},
+  {word:'Benevolent',def:'Well meaning and kindly; generous in spirit towards others'},
+  {word:'Biased',def:'Unfairly prejudiced in favour of or against something or someone'},
+  {word:'Candour',def:'The quality of being open and honest in expression; frankness'},
+  {word:'Catalyst',def:'A person or event that causes important change to happen rapidly'},
+  {word:'Causality',def:'The relationship between cause and effect; causal connection'},
+  {word:'Circumspect',def:'Wary and unwilling to take risks; cautious and careful in action'},
+  {word:'Clandestine',def:'Kept secret or done secretively, especially for illicit reasons'},
+  {word:'Cogent',def:'Clear, logical, and convincing in argument or reasoning'},
+  {word:'Coherent',def:'Logical and consistent; forming a unified whole; easy to understand'},
+  {word:'Colloquial',def:'Used in ordinary or familiar conversation; informal in style'},
+  {word:'Complacent',def:'Showing uncritical satisfaction with oneself; smugly self-satisfied'},
+  {word:'Complicit',def:'Involved in or party to an unlawful or harmful act'},
+  {word:'Contentious',def:'Causing or likely to cause controversy; disputed; arguable'},
+  {word:'Corroborate',def:'To confirm or give support to a statement, theory, or finding'},
+  {word:'Cynical',def:'Distrustful of human sincerity; believing people act from self-interest'},
+  {word:'Dearth',def:'A scarcity or lack of something; a shortage or deficiency'},
+  {word:'Delineate',def:'To describe or indicate something precisely; to portray or depict'},
+  {word:'Detrimental',def:'Tending to cause harm or damage; having a harmful effect'},
+  {word:'Dichotomy',def:'A division into two contrasting or mutually exclusive groups or ideas'},
+  {word:'Didactic',def:'Intended to teach or instruct; morally instructive in nature'},
+  {word:'Diffident',def:'Modest or shy due to lack of self-confidence; hesitant and reserved'},
+  {word:'Diligent',def:'Having or showing care and conscientiousness in one\'s work or duties'},
+  {word:'Discourse',def:'Written or spoken communication or debate on a serious topic'},
+  {word:'Dissonance',def:'A lack of harmony or agreement; tension between conflicting elements'},
+  {word:'Divergent',def:'Tending to be different or to develop in different directions'},
+  {word:'Dogmatic',def:'Inclined to lay down principles as incontrovertibly true; rigid in belief'},
+  {word:'Draconian',def:'Excessively harsh and severe, especially regarding rules or laws'},
+  {word:'Ebullient',def:'Cheerful and full of energy; enthusiastic and high-spirited'},
+  {word:'Efficacy',def:'The ability to produce a desired or intended result; effectiveness'},
+  {word:'Elucidate',def:'To make something clear; to explain or shed light on a topic'},
+  {word:'Empirical',def:'Based on observation or experience rather than theory or logic alone'},
+  {word:'Endemic',def:'Regularly found among particular people or in a certain area or region'},
+  {word:'Equivocal',def:'Open to more than one interpretation; deliberately ambiguous or vague'},
+  {word:'Erudite',def:'Having or showing great knowledge or learning; scholarly and well-read'},
+  {word:'Esoteric',def:'Intended for or understood by only a small number of people with specialist knowledge'},
+  {word:'Euphemism',def:'A mild or indirect expression substituted for a blunt or harsh one'},
+  {word:'Exacerbate',def:'To make a problem, bad situation, or negative feeling worse'},
+  {word:'Exorbitant',def:'Unreasonably high in price or amount; exceeding what is reasonable'},
+  {word:'Explicit',def:'Stated clearly and in detail, leaving no room for confusion or doubt'},
+  {word:'Exploitation',def:'Making use of someone unfairly for one\'s own ends or advantage'},
+  {word:'Fallacious',def:'Based on a mistaken belief; containing a logical error or flaw'},
+  {word:'Fatalistic',def:'Believing that all events are predetermined and therefore inevitable'},
+  {word:'Fervent',def:'Having or displaying passionate intensity; ardent and deeply committed'},
+  {word:'Formidable',def:'Inspiring fear or respect through being impressively powerful or large'},
+  {word:'Fractious',def:'Easily irritated; difficult to control; prone to unruly behaviour'},
+  {word:'Fundamental',def:'Forming a necessary base or core; of central importance; essential'},
+  {word:'Grandiose',def:'Impressively large and ambitious, often excessively or pretentiously so'},
+  {word:'Gratuitous',def:'Uncalled for; lacking good reason; unwarranted and unnecessary'},
+  {word:'Gregarious',def:'Fond of company; sociable and outgoing; living in groups or herds'},
+  {word:'Hegemony',def:'Leadership or dominance, especially of one country or group over others'},
+  {word:'Hierarchical',def:'Arranged in order of rank or authority; structured with levels of power'},
+  {word:'Hypocritical',def:'Behaving in a way that contradicts one\'s stated beliefs or values'},
+  {word:'Ideological',def:'Based on or relating to a system of ideas and ideals forming a worldview'},
+  {word:'Immutable',def:'Unchanging over time or unable to be changed; fixed and permanent'},
+  {word:'Implicit',def:'Suggested or understood though not directly stated; inherent in something'},
+  {word:'Impunity',def:'Exemption from punishment or freedom from the consequences of one\'s actions'},
+  {word:'Incongruous',def:'Not in harmony with surroundings or other aspects; out of place'},
+  {word:'Indigenous',def:'Originating or occurring naturally in a particular place; native to an area'},
+  {word:'Indignant',def:'Feeling or showing anger or annoyance at what is perceived as unjust'},
+  {word:'Infallible',def:'Incapable of making mistakes or being wrong; never failing; unerring'},
+  {word:'Innate',def:'Inborn; natural; present from birth rather than learned or acquired'},
+  {word:'Insidious',def:'Proceeding in a gradual, subtle way but with very harmful effects'},
+  {word:'Integrity',def:'The quality of being honest and having strong moral principles; wholeness'},
+  {word:'Intrinsic',def:'Belonging naturally; essential; inherent to the fundamental nature of something'},
+  {word:'Ironic',def:'Happening in a way contrary to what is expected; using irony as expression'},
+  {word:'Juxtapose',def:'To place two things close together to highlight their contrasting qualities'},
+  {word:'Laconic',def:'Using very few words; brief and to the point in speech or writing'},
+  {word:'Latent',def:'Existing but not yet developed or manifest; hidden and concealed'},
+  {word:'Legitimate',def:'Conforming to law or rules; justifiable and reasonable; valid'},
+  {word:'Malleable',def:'Easily shaped or influenced; adaptable and responsive to external forces'},
+  {word:'Manifest',def:'Clear or obvious to the eye or mind; to display or show something clearly'},
+  {word:'Meticulous',def:'Showing great attention to detail; very careful, precise, and thorough'},
+  {word:'Mitigate',def:'To lessen the gravity, seriousness, or painfulness of something'},
+  {word:'Myopic',def:'Lacking foresight or imagination; unable to see long-term consequences'},
+  {word:'Nefarious',def:'Wicked or criminal; flagrantly evil or immoral in character or purpose'},
+  {word:'Nuanced',def:'Characterised by subtle distinctions, shades of meaning, or fine detail'},
+  {word:'Objective',def:'Not influenced by personal feelings or opinions; based on facts alone'},
+  {word:'Omnipotent',def:'Having unlimited or very great power; all-powerful and almighty'},
+  {word:'Oppressive',def:'Unjustly inflicting hardship and constraint; burdensome and cruel'},
+  {word:'Ostracise',def:'To exclude from a society or group; to shun or banish someone socially'},
+  {word:'Paradigm',def:'A typical example or pattern; a conceptual model or framework of thinking'},
+  {word:'Paradox',def:'A statement that seems contradictory but may nonetheless be true'},
+  {word:'Partisan',def:'Strongly supporting a particular party, cause, or person; biased'},
+  {word:'Peripheral',def:'Of secondary importance; relating to or located on the outer edge'},
+  {word:'Perspicacious',def:'Having a ready insight into things; shrewd and perceptive in judgement'},
+  {word:'Pivotal',def:'Of crucial importance in relation to the development or success of something'},
+  {word:'Plausible',def:'Seeming reasonable or probable; appearing valid or acceptable on the surface'},
+  {word:'Polarised',def:'Divided into two sharply contrasting groups or sets of opinion'},
+  {word:'Pragmatic',def:'Dealing with things sensibly and realistically based on practical results'},
+  {word:'Precedent',def:'An earlier event or action used as a guide or justification for later ones'},
+  {word:'Prevalent',def:'Widespread in a particular area or at a particular time; common'},
+  {word:'Procrastinate',def:'To delay or postpone action; to put off doing something repeatedly'},
+  {word:'Profound',def:'Very great or intense; having or showing deep insight or understanding'},
+  {word:'Proliferate',def:'To increase rapidly in number; to multiply or spread widely and quickly'},
+  {word:'Propaganda',def:'Information used to promote a political cause or particular point of view'},
+  {word:'Protagonist',def:'The leading character in a story; a chief supporter or advocate of a cause'},
+  {word:'Provocative',def:'Causing anger or strong reaction; deliberately stimulating or annoying'},
+  {word:'Pugnacious',def:'Eager or quick to argue, quarrel, or fight; aggressively combative'},
+  {word:'Reciprocal',def:'Given, felt, or done in return by each towards the other; mutual'},
+  {word:'Reductive',def:'Tending to simplify something so much that it distorts or misrepresents it'},
+  {word:'Repercussion',def:'An unintended consequence of an event or action, occurring later'},
+  {word:'Resilience',def:'The capacity to recover quickly from difficulties; mental or physical toughness'},
+  {word:'Rhetoric',def:'The art of effective or persuasive speaking and writing; language used to persuade'},
+  {word:'Sceptical',def:'Not easily convinced; having doubts or reservations about something claimed'},
+  {word:'Semantic',def:'Relating to meaning in language; concerning the sense or significance of words'},
+  {word:'Sinister',def:'Giving the impression that something harmful or evil is happening or intended'},
+  {word:'Sovereignty',def:'Supreme power or authority; the right of a state to govern itself without interference'},
+  {word:'Speculative',def:'Engaged in or based on conjecture rather than established knowledge'},
+  {word:'Spurious',def:'Not being what it purports to be; false, fake, or not genuine'},
+  {word:'Stoic',def:'Enduring pain or hardship without showing feelings or complaining; unemotional'},
+  {word:'Subjective',def:'Based on personal feelings, tastes, or opinions rather than external facts'},
+  {word:'Subversive',def:'Seeking to undermine or overthrow the power of an established system'},
+  {word:'Sycophantic',def:'Excessively eager to please or agree; showing insincere flattery'},
+  {word:'Tenacious',def:'Holding firmly to something; not easily discouraged, stopped, or dislodged'},
+  {word:'Tenuous',def:'Too weak or thin to be convincing; very slight, delicate, or insubstantial'},
+  {word:'Terse',def:'Sparing with words; abrupt and very brief in speech or writing style'},
+  {word:'Transient',def:'Lasting only for a short time; impermanent; passing quickly away'},
+  {word:'Tumultuous',def:'Making a loud confused noise; excited, disordered, and highly disruptive'},
+  {word:'Ubiquitous',def:'Present, appearing, or found everywhere simultaneously; omnipresent'},
+  {word:'Unequivocal',def:'Leaving no doubt whatsoever; clear and unambiguous in meaning'},
+  {word:'Unprecedented',def:'Never done or known before; without historical parallel or precedent'},
+  {word:'Utilitarian',def:'Designed primarily to be useful or practical rather than decorative'},
+  {word:'Vacuous',def:'Having or showing a lack of thought or intelligence; devoid of meaning'},
+  {word:'Verbose',def:'Using or expressed in more words than are needed; unnecessarily wordy'},
+  {word:'Vigilant',def:'Keeping careful watch for possible danger, difficulties, or wrongdoing'},
+  {word:'Vindictive',def:'Having or showing a strong desire to harm someone who has hurt you; spiteful'},
+  {word:'Volatile',def:'Liable to change rapidly and unpredictably, especially worsening suddenly'},
+  {word:'Zealous',def:'Having or showing great energy and enthusiasm in pursuit of a cause or goal'},
+];
+function seededRand(seed){let s=seed+1;return function(){s=Math.imul(1664525,s)+1013904223|0;return(s>>>0)/0x100000000;};}
+function getTodayWords(){
+  const d=new Date();
+  const dayNum=Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000);
+  const rand=seededRand(dayNum);
+  const idx=VOCAB_WORDS.map((_,i)=>i);
+  for(let i=idx.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+  return[idx[0],idx[1],idx[2]].map(i=>VOCAB_WORDS[i]);
 }
 
 // ═══ EXAM BOARDS ══════════════════════════════════════
@@ -418,6 +688,38 @@ const WEEKEND_SUBJECTS=[
   {id:'history',name:'History',          colour:'orange'},
   {id:'re',     name:'Religious Studies',colour:'purple'},
 ];
+const WEEKEND_RESOURCES={
+  maths:[
+    {icon:'🧊',name:'Dr Frost Maths',url:'https://www.drfrostmaths.com',desc:'Topic drills, past papers & method mark practice'},
+    {icon:'📐',name:'Corbettmaths',url:'https://corbettmaths.com',desc:'Video tutorials & practice question sets'},
+    {icon:'📺',name:'BBC Bitesize — Maths',url:'https://www.bbc.co.uk/bitesize/subjects/zqhs34j',desc:'AQA revision guides, quizzes & worked examples'},
+  ],
+  english:[
+    {icon:'📖',name:'BBC Bitesize — English',url:'https://www.bbc.co.uk/bitesize/subjects/z3kw2hv',desc:'Language & Literature revision with model answers'},
+    {icon:'🎭',name:'No Fear Shakespeare',url:'https://www.sparknotes.com/nofear/',desc:'Side-by-side modern translations of every play'},
+    {icon:'✍️',name:'Seneca Learning',url:'https://senecalearning.com',desc:'Free AQA English Language & Literature course'},
+  ],
+  science:[
+    {icon:'🧬',name:'Tassomai',url:'https://www.tassomai.com',desc:'Daily adaptive quiz — best for AQA Combined Science'},
+    {icon:'🔬',name:'Cognito',url:'https://cognitoedu.org',desc:'Short, clear AQA spec videos for all 3 sciences'},
+    {icon:'🎥',name:'FreeScienceLessons',url:'https://www.freesciencelessons.co.uk',desc:'Full AQA spec-by-spec YouTube video series'},
+  ],
+  german:[
+    {icon:'🇩🇪',name:'Language Nut',url:'https://www.languagenut.com',desc:'AQA vocab lists, grammar & listening practice'},
+    {icon:'📡',name:'BBC Bitesize — German',url:'https://www.bbc.co.uk/bitesize/subjects/zxkw2hv',desc:'Grammar rules, vocabulary & past tense practice'},
+    {icon:'🦉',name:'Duolingo',url:'https://www.duolingo.com',desc:'Daily vocab & sentence practice — 10 mins a day'},
+  ],
+  history:[
+    {icon:'📜',name:'BBC Bitesize — History',url:'https://www.bbc.co.uk/bitesize/subjects/zk26n39',desc:'Key events, source analysis skills & exam tips'},
+    {icon:'🏫',name:'Seneca Learning',url:'https://senecalearning.com',desc:'Free Edexcel History revision with spaced recall'},
+    {icon:'📋',name:'Revisely',url:'https://www.revisely.co.uk',desc:'History flashcards, notes & exam technique guides'},
+  ],
+  re:[
+    {icon:'☯️',name:'BBC Bitesize — RS',url:'https://www.bbc.co.uk/bitesize/subjects/zb48q6f',desc:'Themes, beliefs & practices with key quotes'},
+    {icon:'🏫',name:'Seneca Learning',url:'https://senecalearning.com',desc:'Free AQA RS course covering both religions & themes'},
+    {icon:'💡',name:'Khan Academy',url:'https://www.khanacademy.org',desc:'World religions, philosophy & ethics explained clearly'},
+  ],
+};
 
 const DEFAULT_SUBJECTS=[
   {id:'sci',name:'KS4 Science', colour:'teal',  tool:'Tassomai after',     tag:'Live lesson',isLesson:true},
@@ -475,7 +777,7 @@ function getWTState(u){try{return JSON.parse(localStorage.getItem('gcse_wt_'+u)|
 function saveWTState(u,d){try{localStorage.setItem('gcse_wt_'+u,JSON.stringify(d));}catch{}}
 
 function getDefaultData(){
-  return{slots:DEFAULT_SLOTS.map(s=>({...s})),subjects:DEFAULT_SUBJECTS.map(s=>({...s})),history:[],theme:'black',weekLabel:'',bgType:'solid',bgColour:'#000000',lastAutoSaveWeek:null,analytics:{daily:{},weekly:{},monthly:{},subjectTotals:{}}};
+  return{slots:DEFAULT_SLOTS.map(s=>({...s})),subjects:DEFAULT_SUBJECTS.map(s=>({...s})),history:[],theme:'black',weekLabel:'',bgType:'solid',bgColour:'#000000',lastAutoSaveWeek:null,flashcards:[],analytics:{daily:{},weekly:{},monthly:{},subjectTotals:{}}};
 }
 
 // ═══ ANALYTICS HELPERS ════════════════════════════════
@@ -561,10 +863,9 @@ function getCurrentWeekKey2(){return getISOWeekFull(new Date());}
 let _autoSaveChecked=false;
 function checkAutoSave(){
   if(_autoSaveChecked||!STATE.username||STATE.weekOffset!==0)return;
-  const now=new Date();const day=now.getUTCDay();const hour=now.getUTCHours();
   const wk=getCurrentWeekKey2();
+  if(!STATE.data.lastAutoSaveWeek){STATE.data.lastAutoSaveWeek=wk;if(STATE.username)saveUserData(STATE.username,STATE.data);return;}
   if(STATE.data.lastAutoSaveWeek===wk)return;
-  if(!((day===6&&hour>=20)||day===0))return;
   _autoSaveChecked=true;
   const label=STATE.data.weekLabel||getAutoWeekLabel();
   const total=STATE.data.slots.length;const done=STATE.data.slots.filter(s=>s.done).length;const pct=total?Math.round(done/total*100):0;
@@ -586,7 +887,7 @@ let POMO={mode:'focus',timeLeft:25*60,running:false,sessions:0,interval:null};
 function pomoSetMode(m){if(POMO.running){clearInterval(POMO.interval);POMO.running=false;}POMO.mode=m;POMO.timeLeft=POMO_MODES[m].duration;renderPomo();}
 function pomoToggle(){
   if(POMO.running){clearInterval(POMO.interval);POMO.running=false;renderPomo();}
-  else{POMO.running=true;POMO.interval=setInterval(()=>{if(POMO.timeLeft>0){POMO.timeLeft--;renderPomo();}else{clearInterval(POMO.interval);POMO.running=false;if(POMO.mode==='focus'){POMO.sessions++;sendNotification('Focus session complete!','Take a short break — you earned it.','pomo');}try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator();const g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.setValueAtTime(880,ctx.currentTime);g.gain.setValueAtTime(.3,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+1.5);o.start();o.stop(ctx.currentTime+1.5);}catch(e){}renderPomo();}},1000);}
+  else{POMO.running=true;POMO.interval=setInterval(()=>{if(POMO.timeLeft>0){POMO.timeLeft--;renderPomo();}else{clearInterval(POMO.interval);POMO.running=false;if(POMO.mode==='focus'){POMO.sessions++;sendNotification('Focus session complete!','Take a short break — you earned it.','pomo');}try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator();const g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.setValueAtTime(880,ctx.currentTime);g.gain.setValueAtTime(.3,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+1.5);o.start();o.stop(ctx.currentTime+1.5);}catch(e){}renderPomo();}},1000);renderPomo();}
 }
 function pomoReset(){clearInterval(POMO.interval);POMO.running=false;POMO.timeLeft=POMO_MODES[POMO.mode].duration;renderPomo();}
 function fmtPomo(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
@@ -632,25 +933,46 @@ function renderWeekend(){
   [['Saturday',sat],['Sunday',sun]].forEach(([dn,date],di)=>{
     const sec=mk('div','weekend-day-section');
     const lbl=mk('div','weekend-day-label');lbl.innerHTML=`${dn} <span class="weekend-day-date">${fmtDate(date)}</span>`;sec.appendChild(lbl);
-    const tasks=mk('div','weekend-tasks');
     const subs=di===0?WEEKEND_SUBJECTS.slice(0,3):WEEKEND_SUBJECTS.slice(3);
     subs.forEach(subj=>{
       const eb=EXAM_BOARDS[subj.id];const tl=WEEKEND_TASKS[subj.id]||[];const c=getColour(subj.colour);
+      const subjSec=mk('div');subjSec.style.cssText='background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--r2);padding:14px;margin-bottom:10px';
+      const subjHdr=mk('div');subjHdr.style.cssText=`font-size:13px;font-weight:700;color:${c.hex};margin-bottom:10px;display:flex;align-items:center;gap:8px`;
+      subjHdr.innerHTML=`<span style="width:8px;height:8px;border-radius:50%;background:${c.hex};flex-shrink:0"></span>${subj.name}${eb?`<span class="exam-board-chip">${eb.board} ${eb.code}</span>`:''}`;
+      if(eb){const tip2=mk('div');tip2.style.cssText='font-size:11px;color:var(--text3);margin-bottom:10px;line-height:1.5;padding:7px 10px;background:rgba(255,255,255,.04);border-radius:7px';tip2.textContent='💡 '+eb.tip;subjSec.appendChild(subjHdr);subjSec.appendChild(tip2);}else{subjSec.appendChild(subjHdr);}
+      const tasks=mk('div','weekend-tasks');
       tl.forEach((task,ti)=>{
         const key=`${di}-${subj.id}-${ti}`;const isDone=!!wtState[key];
         const card=mk('div','weekend-task'+(isDone?' done':''));card.onclick=()=>{wtState[key]=!wtState[key];saveWTState(STATE.username||'guest',wtState);renderWeekend();};
         const chk=mk('div','wt-check');chk.textContent=isDone?'✓':'';
         const body=mk('div','wt-body');
-        const sl=mk('div','wt-subject');sl.style.color=c.hex;sl.innerHTML=`${subj.name}<span class="exam-board-chip">${eb?eb.board:'AQA'} ${eb?eb.code:''}</span>`;
         const nm=mk('div','wt-name');nm.textContent=task.name;
         const dt=mk('div','wt-detail');dt.textContent=task.detail;
-        body.appendChild(sl);body.appendChild(nm);body.appendChild(dt);
-        if(ti===0&&eb){const tip2=mk('div','wt-exam-tip');tip2.textContent='💡 '+eb.tip;body.appendChild(tip2);}
+        body.appendChild(nm);body.appendChild(dt);
         const dur=mk('div','wt-duration');dur.textContent=task.duration;
         card.appendChild(chk);card.appendChild(body);card.appendChild(dur);tasks.appendChild(card);
       });
+      subjSec.appendChild(tasks);
+      const res=WEEKEND_RESOURCES[subj.id];
+      if(res){
+        const rd=mk('div','wt-resources');
+        const rl=mk('div','wt-res-label');rl.textContent='Where to revise';rd.appendChild(rl);
+        const links=mk('div','wt-res-links');
+        res.forEach(r=>{
+          const a=mk('a','wt-res-link');a.href=r.url;a.target='_blank';a.rel='noopener noreferrer';
+          const icon=mk('span','wt-res-icon');icon.textContent=r.icon;
+          const body2=mk('div','wt-res-body');
+          const rn=mk('div','wt-res-name');rn.textContent=r.name;
+          const rd2=mk('div','wt-res-desc');rd2.textContent=r.desc;
+          body2.appendChild(rn);body2.appendChild(rd2);
+          const arr=mk('span','wt-res-arrow');arr.textContent='↗';
+          a.appendChild(icon);a.appendChild(body2);a.appendChild(arr);links.appendChild(a);
+        });
+        rd.appendChild(links);subjSec.appendChild(rd);
+      }
+      sec.appendChild(subjSec);
     });
-    sec.appendChild(tasks);p.appendChild(sec);
+    p.appendChild(sec);
   });
   const note=mk('div');note.style.cssText='font-size:11px;color:var(--text3);margin-top:8px;line-height:1.7;padding:12px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid var(--border)';note.textContent='Exam boards shown are the most common at Cambridge-area schools. Verify with your IVC teachers if unsure.';p.appendChild(note);
   ov.appendChild(p);root.appendChild(ov);
@@ -731,6 +1053,7 @@ function doLogin(username){
   if(!STATE.data.weekLabel){STATE.data.weekLabel=getAutoWeekLabel();if(username)saveUserData(username,STATE.data);}
   requestNotifications();
   render();
+  checkAutoSave();
 }
 
 // ═══ TOPBAR ═══════════════════════════════════════════
@@ -769,7 +1092,7 @@ function renderTopbar(){
 // ═══ NAV TABS ═════════════════════════════════════════
 function renderNavTabs(){
   const tabs=mk('div','nav-tabs');
-  [['timetable','📅 Timetable'],['analytics','📊 Analytics'],['brain','🧠 Brain Map']].forEach(([id,lbl])=>{
+  [['timetable','📅 Timetable'],['analytics','📊 Analytics'],['flashcards','🃏 Flashcards']].forEach(([id,lbl])=>{
     const t=mk('button','nav-tab'+(STATE.activeTab===id?' active':''));t.textContent=lbl;t.onclick=()=>setState({activeTab:id});tabs.appendChild(t);
   });return tabs;
 }
@@ -827,8 +1150,10 @@ function renderTimetable(){
   const displaySlots=isPast?(STATE.data.history.find(h=>h.offset===STATE.weekOffset)?.slots||[]):STATE.data.slots;
   const total=displaySlots.length;const done=displaySlots.filter(s=>s.done).length;const pct=total?Math.round(done/total*100):0;
   const main=mk('div','main');
-  if(!isPast){const an=mk('div','autosave-notice');const dot=mk('div','autosave-dot');const msg=mk('span');msg.textContent='Auto-save on — your week saves automatically each Saturday evening.';an.appendChild(dot);an.appendChild(msg);main.appendChild(an);}
+  if(!isPast){const an=mk('div','autosave-notice');const dot=mk('div','autosave-dot');const msg=mk('span');msg.textContent='Auto-save on — your week resets automatically each new school week.';an.appendChild(dot);an.appendChild(msg);main.appendChild(an);}
+  if(!isPast){const hol=getCurrentHoliday();if(hol){const hb=mk('div','holiday-banner');const icon=mk('div','holiday-banner-icon');icon.textContent=hol.emoji;const body=mk('div','holiday-banner-body');const title=mk('div','holiday-banner-title');title.textContent=hol.label;const sub=mk('div','holiday-banner-sub');sub.textContent=`Back to school: ${hol.resume}`;body.appendChild(title);body.appendChild(sub);hb.appendChild(icon);hb.appendChild(body);main.appendChild(hb);}else{const next=getNextHoliday();if(next){const days=daysUntil(next.start);const strip=mk('div','next-hol-strip');strip.innerHTML=`<span>${next.emoji} Next: <strong>${next.label}</strong></span><span class="next-hol-chip"><span class="next-hol-days">${days}</span> day${days===1?'':'s'} away</span>`;main.appendChild(strip);}}}
   if(!isPast&&isWeekend()){const wb=mk('div');wb.style.cssText='background:rgba(48,209,88,.08);border:1px solid rgba(48,209,88,.2);border-radius:var(--r2);padding:10px 16px;margin-bottom:12px;font-size:13px;color:var(--green);display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;transition:background .15s';wb.innerHTML='<span>📚 It\'s the weekend — check your revision plan</span><span style="font-size:12px;font-weight:600;opacity:.7">View →</span>';wb.onclick=()=>setState({showWeekend:true});main.appendChild(wb);}
+  const words=getTodayWords();const vc=mk('div','vocab-card');const vh=mk('div','vocab-header');const vhd=mk('div','vocab-header-dot');vh.appendChild(vhd);vh.appendChild(document.createTextNode('Words of the Day'));vc.appendChild(vh);const vg=mk('div','vocab-grid');words.forEach(w=>{const vi=mk('div','vocab-item');const vw=mk('div','vocab-word');vw.textContent=w.word;const vd=mk('div','vocab-def');vd.textContent=w.def;vi.appendChild(vw);vi.appendChild(vd);vg.appendChild(vi);});vc.appendChild(vg);main.appendChild(vc);
   const q=getTodayQuote();const qc=mk('div','quote-card');const qm=mk('div','quote-mark');qm.textContent='"';const qt=mk('div','quote-text');qt.textContent=q.text;const qa=mk('div','quote-author');qa.textContent='— '+q.author;qc.appendChild(qm);qc.appendChild(qt);qc.appendChild(qa);main.appendChild(qc);
   const pc=mk('div','prog-card');pc.innerHTML=`<div class="prog-label"><strong>${done}/${total}</strong> complete</div><div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div><div class="prog-pct">${pct}%</div>`;main.appendChild(pc);
   if(!isPast){const nu=buildNextUpCard();if(nu)main.appendChild(nu);}
@@ -927,55 +1252,148 @@ function drawActivityChart(canvas){
   bars.forEach((v,i)=>{const x=20+i*(barW+gap);const bh=Math.max(4,((v/maxV)*(h-30)));const y=h-20-bh;const isToday2=(i===days-1);ctx.fillStyle=isToday2?accentColor:accentFade;ctx.beginPath();ctx.roundRect(x,y,barW,bh,3);ctx.fill();ctx.fillStyle=textColor;ctx.font='9px Inter, sans-serif';ctx.textAlign='center';ctx.fillText(labels[i],x+barW/2,h-5);if(v>0){ctx.fillStyle=isToday2?'rgba(255,255,255,.8)':textColor;ctx.fillText(v,x+barW/2,y-3);}});
 }
 
-// ═══ BRAIN MAP PAGE ═══════════════════════════════════
-function renderBrainMap(){
-  const page=mk('div','brain-page');
-  const title=mk('div','section-title');title.textContent='Brain Map';title.style.marginBottom='16px';page.appendChild(title);
-  const wrap=mk('div','brain-wrap');
-  const svgCard=mk('div','brain-svg-card');
-  const a=STATE.data.analytics;const st=a.subjectTotals||{};const maxVal=Math.max(1,...Object.values(st));
-  const regions=[
-    {id:'maths',  name:'Maths',    colour:'yellow', cx:190, cy:90,  r:52},
-    {id:'english',name:'English',  colour:'pink',   cx:310, cy:80,  r:48},
-    {id:'science',name:'Science',  colour:'teal',   cx:250, cy:165, r:55},
-    {id:'german', name:'German',   colour:'green',  cx:140, cy:175, r:40},
-    {id:'history',name:'History',  colour:'orange', cx:345, cy:170, r:40},
-    {id:'re',     name:'RE',       colour:'purple', cx:250, cy:255, r:38},
-  ];
-  let svgContent='<svg viewBox="0 0 500 340" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto">';
-  svgContent+=`<ellipse cx="250" cy="175" rx="220" ry="160" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>`;
-  svgContent+=`<ellipse cx="250" cy="175" rx="180" ry="130" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1" stroke-dasharray="4,4"/>`;
-  svgContent+=`<line x1="250" y1="20" x2="250" y2="330" stroke="rgba(255,255,255,.06)" stroke-width="1" stroke-dasharray="3,5"/>`;
-  regions.forEach(reg=>{
-    const subjMatch=STATE.data.subjects.find(s=>s.name.toLowerCase().includes(reg.id)||s.id===reg.id||s.id.includes(reg.id));
-    const sname=subjMatch?subjMatch.name:reg.name;const count=st[sname]||0;
-    const c=getColour(reg.colour);const intensity=count?Math.min(0.9,(count/maxVal)*0.8+0.1):0.08;
-    svgContent+=`<circle cx="${reg.cx}" cy="${reg.cy}" r="${reg.r}" fill="${c.hex.replace('#','rgba(')}${hexToRGB(c.hex)},${intensity})" stroke="${c.hex}" stroke-width="1.5" opacity="0.9"/>`;
-    if(count>0){svgContent+=`<circle cx="${reg.cx}" cy="${reg.cy}" r="${reg.r+6}" fill="none" stroke="${c.hex}" stroke-width="0.5" opacity="0.3"/>`;}
-    const shortName=reg.name.length>7?reg.name.slice(0,7)+'…':reg.name;
-    svgContent+=`<text x="${reg.cx}" y="${reg.cy-4}" text-anchor="middle" fill="white" font-size="9" font-weight="700" font-family="Inter,sans-serif">${shortName}</text>`;
-    svgContent+=`<text x="${reg.cx}" y="${reg.cy+9}" text-anchor="middle" fill="rgba(255,255,255,.6)" font-size="8" font-family="Inter,sans-serif">${count} done</text>`;
+// ═══ FLASHCARDS ═══════════════════════════════════════
+let FC={mode:'browse',filter:'all',queue:[],idx:0,flipped:false,sCorrect:0,sTotal:0};
+
+function fcStartStudy(cards){
+  if(!cards.length){showToast('No cards to study yet — add some first!',null);return;}
+  const shuffled=[...cards].sort(()=>Math.random()-.5);
+  FC={...FC,mode:'study',queue:shuffled.map(c=>c.id),idx:0,flipped:false,sCorrect:0,sTotal:0};
+  render();
+}
+
+function renderFlashcards(){
+  if(FC.mode==='study')return renderFCStudy();
+  const page=mk('div','fc-page');
+  const cards=STATE.data.flashcards||[];
+  const filtered=FC.filter==='all'?cards:cards.filter(c=>c.subjectId===FC.filter);
+  const known=filtered.filter(c=>c.known).length;
+
+  // stats bar
+  if(cards.length){
+    const sb=mk('div','fc-stats-bar');
+    [{num:cards.length,lbl:'Total cards'},{num:known,lbl:'Known'},{num:filtered.length-known,lbl:'Learning'},{num:STATE.data.subjects.length,lbl:'Subjects'}].forEach(s=>{
+      const box=mk('div','fc-stat');const n=mk('div','fc-stat-num');n.textContent=s.num;const l=mk('div','fc-stat-lbl');l.textContent=s.lbl;box.appendChild(n);box.appendChild(l);sb.appendChild(box);
+    });
+    page.appendChild(sb);
+  }
+
+  // toolbar
+  const toolbar=mk('div','fc-toolbar');
+  const addB=btn('+ Add card','btn-primary',()=>openModal({type:'addCard'}));
+  const genB=btn('✨ Generate from text','btn-ghost',()=>openModal({type:'generateCards'}));
+  const sel=mk('select','fc-filter-select');
+  const allOpt=document.createElement('option');allOpt.value='all';allOpt.textContent='All subjects';sel.appendChild(allOpt);
+  STATE.data.subjects.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.name;if(FC.filter===s.id)o.selected=true;sel.appendChild(o);});
+  sel.onchange=e=>{FC.filter=e.target.value;render();};
+  const studyB=btn(`Study ${filtered.length} card${filtered.length===1?'':'s'} →`,'btn-ghost',()=>fcStartStudy(filtered));
+  toolbar.appendChild(addB);toolbar.appendChild(genB);toolbar.appendChild(sel);toolbar.appendChild(studyB);
+  page.appendChild(toolbar);
+
+  if(!cards.length){
+    const empty=mk('div','fc-empty');
+    empty.innerHTML='<div style="font-size:36px;margin-bottom:12px">🃏</div><strong style="color:var(--text);display:block;margin-bottom:6px">No flashcards yet</strong>Hit "+ Add card" to create your first one.<br>Organise by subject and study them here.';
+    page.appendChild(empty);return page;
+  }
+  if(!filtered.length){
+    const empty=mk('div','fc-empty');empty.textContent='No cards for this subject yet.';page.appendChild(empty);return page;
+  }
+
+  // group by subject
+  const groups=[];
+  STATE.data.subjects.forEach(s=>{
+    const sc=filtered.filter(c=>c.subjectId===s.id);
+    if(sc.length)groups.push({label:s.name,colour:s.colour,cards:sc});
   });
-  svgContent+='</svg>';
-  svgCard.innerHTML=svgContent;
-  const svgNote=mk('div');svgNote.style.cssText='font-size:11px;color:var(--text3);margin-top:12px;line-height:1.5';svgNote.textContent='Brighter = more sessions completed in that subject';
-  svgCard.appendChild(svgNote);
-  wrap.appendChild(svgCard);
-  const legend=mk('div','brain-legend');const lt=mk('div','brain-legend-title');lt.textContent='Subject Progress';legend.appendChild(lt);
-  const allSubjectTotals=WEEKEND_SUBJECTS.map(ws=>{const subj=STATE.data.subjects.find(s=>s.name.toLowerCase().includes(ws.id)||s.id===ws.id||s.id.includes(ws.id));const sname=subj?subj.name:ws.name;const count=st[sname]||0;return{...ws,sname,count};}).sort((a,b)=>b.count-a.count);
-  const maxCount=Math.max(1,...allSubjectTotals.map(s=>s.count));
-  allSubjectTotals.forEach(s=>{
-    const eb=EXAM_BOARDS[s.id];const c=getColour(s.colour);
-    const item=mk('div','brain-subject-item');
-    const dot=mk('div','brain-subject-dot');dot.style.background=c.hex;
-    const info=mk('div','brain-subject-info');const nm=mk('div','brain-subject-name');nm.textContent=s.sname;const board=mk('div','brain-subject-board');board.textContent=(eb?eb.board+' '+eb.code:'');
-    const track=mk('div','brain-subject-bar-track');const fill=mk('div','brain-subject-bar-fill');fill.style.background=c.hex;fill.style.width=`${(s.count/maxCount)*100}%`;track.appendChild(fill);
-    info.appendChild(nm);info.appendChild(board);info.appendChild(track);
-    const pct=mk('div','brain-subject-pct');pct.textContent=s.count;
-    item.appendChild(dot);item.appendChild(info);item.appendChild(pct);legend.appendChild(item);
+  const uncategorised=filtered.filter(c=>!STATE.data.subjects.find(s=>s.id===c.subjectId));
+  if(uncategorised.length)groups.push({label:'Other',colour:'blue',cards:uncategorised});
+
+  groups.forEach(g=>{
+    const c=getColour(g.colour||'blue');
+    const sec=mk('div','fc-section');
+    const hdr=mk('div','fc-section-header');
+    hdr.innerHTML=`<span style="width:8px;height:8px;border-radius:50%;background:${c.hex};flex-shrink:0;display:inline-block"></span><span style="color:${c.hex}">${g.label}</span><span class="fc-section-count">${g.cards.length}</span>`;
+    const grid=mk('div','fc-grid');
+    g.cards.forEach(card=>{
+      const el=mk('div','fc-card');
+      const front=mk('div','fc-card-front');front.textContent=card.front;
+      const footer=mk('div','fc-card-footer');
+      const knownBadge=mk('span',`fc-card-known ${card.known?'yes':'no'}`);knownBadge.textContent=card.known?'✓ Known':'Learning';
+      const del=mk('button','fc-card-del');del.textContent='✕';del.title='Delete';
+      del.onclick=e=>{e.stopPropagation();if(confirm('Delete this card?')){setData({flashcards:(STATE.data.flashcards||[]).filter(fc=>fc.id!==card.id)});}};
+      footer.appendChild(knownBadge);footer.appendChild(del);
+      el.appendChild(front);el.appendChild(footer);
+      el.onclick=()=>openModal({type:'viewCard',card});
+      grid.appendChild(el);
+    });
+    sec.appendChild(hdr);sec.appendChild(grid);page.appendChild(sec);
   });
-  wrap.appendChild(legend);page.appendChild(wrap);
   return page;
+}
+
+function renderFCStudy(){
+  const wrap=mk('div','fc-study-wrap');
+  const cards=STATE.data.flashcards||[];
+
+  if(FC.idx>=FC.queue.length){
+    // results screen
+    const res=mk('div','fc-result-card');
+    const emoji=mk('div','fc-result-emoji');emoji.textContent=FC.sCorrect===FC.sTotal&&FC.sTotal>0?'🎉':FC.sCorrect>FC.sTotal/2?'💪':'📚';
+    const score=mk('div','fc-result-score');score.textContent=`${FC.sCorrect}/${FC.sTotal}`;
+    const sub=mk('div','fc-result-sub');sub.textContent='cards correct this session';
+    res.appendChild(emoji);res.appendChild(score);res.appendChild(sub);wrap.appendChild(res);
+    const btns2=mk('div','fc-result-btns');
+    const again=btn('Study again','btn-primary',()=>{const all=cards.filter(c=>FC.queue.includes(c.id));fcStartStudy(all);});
+    const back=btn('Back to cards','btn-ghost',()=>{FC.mode='browse';render();});
+    btns2.appendChild(again);btns2.appendChild(back);wrap.appendChild(btns2);
+    return wrap;
+  }
+
+  const cardId=FC.queue[FC.idx];
+  const card=cards.find(c=>c.id===cardId);
+  if(!card){FC.idx++;return renderFCStudy();}
+  const subj=STATE.data.subjects.find(s=>s.id===card.subjectId);
+  const c=getColour(subj?.colour||'blue');
+
+  // header
+  const hdr=mk('div','fc-study-header');
+  const backB=mk('button','btn btn-ghost');backB.textContent='← Cards';backB.style.padding='7px 12px';backB.style.fontSize='12px';backB.onclick=()=>{FC.mode='browse';render();};
+  const prog=mk('div','fc-study-progress');const fill=mk('div','fc-study-fill');fill.style.width=`${(FC.idx/FC.queue.length)*100}%`;prog.appendChild(fill);
+  const counter=mk('div','fc-study-counter');counter.textContent=`${FC.idx+1} / ${FC.queue.length}`;
+  hdr.appendChild(backB);hdr.appendChild(prog);hdr.appendChild(counter);wrap.appendChild(hdr);
+
+  if(subj){const sl=mk('div');sl.style.cssText=`font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${c.hex};margin-bottom:14px;text-align:center`;sl.textContent=subj.name;wrap.appendChild(sl);}
+
+  // flip card
+  const fc2=mk('div',`fc-flip-card${FC.flipped?' revealed':''}`);
+  const sideLabel=mk('div','fc-flip-side');sideLabel.textContent=FC.flipped?'Answer':'Question';
+  const text=mk('div','fc-flip-text');text.textContent=FC.flipped?card.back:card.front;
+  fc2.appendChild(sideLabel);fc2.appendChild(text);
+  if(!FC.flipped){const hint=mk('div','fc-flip-hint');hint.textContent='Tap to reveal answer';fc2.appendChild(hint);}
+  fc2.onclick=()=>{FC.flipped=!FC.flipped;const el=document.querySelector('.fc-flip-card');if(el){const fresh=document.createElement('div');fresh.className=`fc-flip-card${FC.flipped?' revealed':''}`;const sl2=document.createElement('div');sl2.className='fc-flip-side';sl2.textContent=FC.flipped?'Answer':'Question';const t2=document.createElement('div');t2.className='fc-flip-text';t2.textContent=FC.flipped?card.back:card.front;fresh.appendChild(sl2);fresh.appendChild(t2);if(!FC.flipped){const h2=document.createElement('div');h2.className='fc-flip-hint';h2.textContent='Tap to reveal answer';fresh.appendChild(h2);}fresh.onclick=fc2.onclick;el.replaceWith(fresh);const ab=document.querySelector('.fc-answer-btns');const sr=document.querySelector('.fc-skip-row');if(FC.flipped&&!ab){const newBtns=buildFCAnswerBtns(card);wrap.insertBefore(newBtns,sr||null);}if(!FC.flipped&&ab)ab.remove();}};
+  wrap.appendChild(fc2);
+
+  if(FC.flipped){wrap.appendChild(buildFCAnswerBtns(card));}
+  else{
+    const skipRow=mk('div','fc-skip-row');
+    const skipB=mk('button','btn btn-ghost');skipB.textContent='Skip →';skipB.style.fontSize='13px';
+    skipB.onclick=()=>{FC.sTotal++;FC.flipped=false;FC.idx++;render();};
+    skipRow.appendChild(skipB);wrap.appendChild(skipRow);
+  }
+  return wrap;
+}
+
+function buildFCAnswerBtns(card){
+  const btns2=mk('div','fc-answer-btns');
+  const no=btn('✕  Still learning','btn-danger',()=>{FC.sTotal++;FC.flipped=false;FC.idx++;render();});
+  const yes=btn('✓  Got it','btn-primary',()=>{
+    FC.sCorrect++;FC.sTotal++;
+    setData({flashcards:(STATE.data.flashcards||[]).map(fc=>fc.id===card.id?{...fc,known:true}:fc)},true,true);
+    FC.flipped=false;FC.idx++;render();
+  });
+  yes.style.background='var(--green)';yes.style.borderColor='var(--green)';
+  btns2.appendChild(no);btns2.appendChild(yes);
+  return btns2;
 }
 
 function hexToRGB(hex){const r=parseInt(hex.slice(1,3),16);const g=parseInt(hex.slice(3,5),16);const b=parseInt(hex.slice(5,7),16);return`${r},${g},${b},`;}
@@ -989,6 +1407,9 @@ function renderModal(){
   if(m.type==='slot')buildSlotModal(box,m.slot,m.isPast);
   if(m.type==='add')buildAddModal(box,m.day);
   if(m.type==='sync')buildSyncModal(box);
+  if(m.type==='addCard')buildAddCardModal(box);
+  if(m.type==='viewCard')buildViewCardModal(box,m.card);
+  if(m.type==='generateCards')buildGenerateCardsModal(box);
   ov.appendChild(box);return ov;
 }
 function buildSlotModal(box,slot,isPast){
@@ -1021,6 +1442,154 @@ function buildAddModal(box,day){
   const ti=mk('input','form-input');ti.type='time';ti.value='09:00';ti.oninput=e=>st=e.target.value;box.appendChild(fg('Time',ti));
   const btns=mk('div','modal-btns');btns.appendChild(btn('Cancel','btn-ghost',closeModal));
   btns.appendChild(btn('Add','btn-primary',()=>{setData({slots:[...STATE.data.slots,{id:uid(),day,time:st,subject:ss,note:'',done:false,type:'revision'}]});closeModal();}));box.appendChild(btns);
+}
+function parseTextToCards(text){
+  const cards=[];const seen=new Set();
+  function add(front,back){
+    front=front.trim().replace(/\s+/g,' ').replace(/\?+$/,'?');
+    back=back.trim().replace(/\s+/g,' ').replace(/\.$/,'');
+    if(!front||!back||front.length<6||back.length<4)return;
+    const key=front.toLowerCase();if(seen.has(key))return;seen.add(key);
+    cards.push({front,back});
+  }
+  // Strip markdown heading markers and clean up
+  const lines=text.split('\n').map(l=>l.replace(/^#+\s*/,'').replace(/\*\*/g,'').replace(/^\*\s+/,'').trim()).filter(l=>l.length>4);
+  lines.forEach(line=>{
+    // Numbered / bulleted list items — strip marker then process as sentence
+    line=line.replace(/^[\d]+[.)]\s+/,'').replace(/^[•\-\*]\s+/,'').trim();
+    if(!line)return;
+    // "Term: Definition" — colon split where left side is short and has no period
+    const colonM=line.match(/^([A-Za-z][^:.!?]{1,55}):\s*(.{8,})$/);
+    if(colonM&&!colonM[1].includes('.')){
+      const term=colonM[1].trim();const def=colonM[2].trim();
+      add(`What is ${term}?`,`${term}: ${def}`);return;
+    }
+    // "Term — Definition" em-dash variant
+    const dashM=line.match(/^([A-Za-z][^—.!?]{1,55})\s*—\s*(.{8,})$/);
+    if(dashM){add(`What is ${dashM[1].trim()}?`,`${dashM[1].trim()} — ${dashM[2].trim()}`);return;}
+    // Split into individual sentences for further processing
+    const sents=(line.match(/[^.!?]+[.!?]*/g)||[line]).map(s=>s.trim()).filter(s=>s.length>8);
+    sents.forEach(sent=>{
+      const clean=sent.replace(/\.$/,'').trim();
+      // "X is/are/was/were/means/refers to Y"
+      const isM=clean.match(/^(.{3,60}?)\s+(is|are|was|were|means|refers to|is defined as|is known as|is called|is the)\s+(.{5,})$/i);
+      if(isM){
+        const subj=isM[1].trim();const verb=isM[2].trim();const def=isM[3].trim();
+        if(subj.split(/\s+/).length<=7&&!subj.includes(',')){
+          add(`What ${verb==='is'||verb==='is the'?'is':verb==='are'?'are':verb==='was'?'was':verb==='were'?'were':'is'} ${subj}?`,clean+'.');return;
+        }
+      }
+      // "The [noun] of X is/was Y" → "What is the [noun] of X?"
+      const theM=clean.match(/^(The\s+.{3,50}?)\s+(is|was|are|were)\s+(.{5,})$/i);
+      if(theM&&theM[1].split(/\s+/).length<=8){
+        add(`What ${theM[2]} ${theM[1].toLowerCase()}?`,clean+'.');return;
+      }
+      // Fallback: cloze — show first ~55% of sentence, answer is the full sentence
+      const words=clean.split(/\s+/);
+      if(words.length>=7){
+        const cut=Math.ceil(words.length*0.55);
+        const front=words.slice(0,cut).join(' ')+'…';
+        add(front,clean+'.');
+      }
+    });
+  });
+  return cards.slice(0,50);
+}
+
+function buildGenerateCardsModal(box){
+  let subjectId=STATE.data.subjects[0]?.id||'';
+  let previewCards=null;
+  const content=mk('div');box.appendChild(content);
+  function showInput(){
+    content.innerHTML='';
+    const tt=mk('div','modal-title');tt.textContent='Generate from Text';
+    const sub=mk('div','modal-subtitle');sub.textContent='Paste any revision notes, a paragraph or a list — cards are created automatically';
+    content.appendChild(tt);content.appendChild(sub);
+    const ss=mk('select','form-select');
+    STATE.data.subjects.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.name;if(s.id===subjectId)o.selected=true;ss.appendChild(o);});
+    ss.onchange=e=>subjectId=e.target.value;
+    content.appendChild(fg('Subject',ss));
+    const tip=mk('div');tip.style.cssText='font-size:12px;color:var(--text3);background:rgba(10,132,255,.07);border:1px solid rgba(10,132,255,.15);border-radius:var(--r3);padding:10px 13px;margin-bottom:14px;line-height:1.7';
+    tip.innerHTML='<strong style="color:var(--accent)">Tips for best results:</strong><br>• Works great with definition lists (<em>Term: definition</em>)<br>• Factual sentences ("Osmosis is the movement of…")<br>• Bullet/numbered lists of key facts<br>• Copy straight from your revision notes or a textbook';
+    content.appendChild(tip);
+    const ta=mk('textarea','form-textarea');ta.placeholder='Paste your revision text here…\n\nExample:\nOsmosis: the movement of water molecules through a partially permeable membrane.\nThe Treaty of Versailles was signed in 1919 and imposed harsh reparations on Germany.\n• Mitosis produces 2 genetically identical daughter cells\n• Meiosis produces 4 genetically unique gametes';
+    ta.style.minHeight='200px';ta.style.fontFamily='inherit';
+    content.appendChild(fg('Revision text',ta));
+    const btns=mk('div','modal-btns');
+    btns.appendChild(btn('Cancel','btn-ghost',closeModal));
+    const genBtn=btn('Generate cards →','btn-primary',()=>{
+      const text=ta.value.trim();
+      if(text.length<10){showToast('Please paste some revision text first',null);return;}
+      const parsed=parseTextToCards(text);
+      if(!parsed.length){showToast('No cards detected — try using "Term: definition" format',null);return;}
+      previewCards=parsed.map((c,i)=>({...c,_id:i,_keep:true}));
+      showPreview();
+    });
+    btns.appendChild(genBtn);content.appendChild(btns);
+  }
+  function showPreview(){
+    content.innerHTML='';
+    const tt=mk('div','modal-title');tt.textContent=`${previewCards.length} cards generated`;
+    const sub=mk('div','modal-subtitle');sub.textContent='Remove any cards you don\'t want, then save the rest';
+    content.appendChild(tt);content.appendChild(sub);
+    const list=mk('div');list.style.cssText='display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow-y:auto;margin-bottom:16px;padding-right:2px';
+    function rerender(){
+      list.innerHTML='';
+      const kept=previewCards.filter(c=>c._keep);
+      kept.forEach(c=>{
+        const row=mk('div');row.style.cssText='background:var(--s2);border:1px solid var(--border);border-radius:var(--r3);padding:11px 13px;display:flex;gap:10px;align-items:flex-start';
+        const info=mk('div');info.style.cssText='flex:1;min-width:0';
+        const front=mk('div');front.style.cssText='font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.4';front.textContent=c.front;
+        const back=mk('div');back.style.cssText='font-size:11px;color:var(--text2);line-height:1.4';back.textContent=c.back;
+        info.appendChild(front);info.appendChild(back);
+        const del=mk('button');del.textContent='✕';del.style.cssText='background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:2px 5px;border-radius:4px;flex-shrink:0;font-family:inherit;transition:color .15s';
+        del.onmouseenter=()=>del.style.color='var(--pink)';del.onmouseleave=()=>del.style.color='var(--text3)';
+        del.onclick=()=>{c._keep=false;rerender();updateSaveBtn();};
+        row.appendChild(info);row.appendChild(del);list.appendChild(row);
+      });
+      if(!kept.length){const empty=mk('div');empty.style.cssText='text-align:center;color:var(--text3);padding:20px;font-size:13px';empty.textContent='All cards removed — go back to try again';list.appendChild(empty);}
+    }
+    rerender();content.appendChild(list);
+    const btns=mk('div','modal-btns');
+    const backBtn=btn('← Back','btn-ghost',showInput);
+    const saveBtn=btn('','btn-primary',()=>{
+      const kept=previewCards.filter(c=>c._keep);
+      if(!kept.length){showToast('No cards to add',null);return;}
+      const newCards=kept.map(c=>({id:uid(),subjectId,front:c.front,back:c.back,known:false,createdAt:Date.now()}));
+      setData({flashcards:[...(STATE.data.flashcards||[]),...newCards]});
+      closeModal();showToast(`${newCards.length} card${newCards.length===1?'':'s'} added!`,null);
+    });
+    function updateSaveBtn(){const n=previewCards.filter(c=>c._keep).length;saveBtn.textContent=`Add ${n} card${n===1?'':'s'}`;}
+    updateSaveBtn();
+    btns.appendChild(backBtn);btns.appendChild(saveBtn);content.appendChild(btns);
+  }
+  showInput();
+}
+function buildAddCardModal(box){
+  const tt=mk('div','modal-title');tt.textContent='New Flashcard';const sub=mk('div','modal-subtitle');sub.textContent='Add a question and answer';box.appendChild(tt);box.appendChild(sub);
+  let subjectId=STATE.data.subjects[0]?.id||'';let front='';let back='';
+  const ss=mk('select','form-select');STATE.data.subjects.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.name;ss.appendChild(o);});ss.onchange=e=>subjectId=e.target.value;box.appendChild(fg('Subject',ss));
+  const ft=mk('textarea','form-textarea');ft.placeholder='Question / front of card…';ft.style.minHeight='80px';ft.oninput=e=>front=e.target.value;box.appendChild(fg('Front',ft));
+  const bt=mk('textarea','form-textarea');bt.placeholder='Answer / back of card…';bt.style.minHeight='80px';bt.oninput=e=>back=e.target.value;box.appendChild(fg('Back (answer)',bt));
+  const btns=mk('div','modal-btns');btns.appendChild(btn('Cancel','btn-ghost',closeModal));
+  btns.appendChild(btn('Add card','btn-primary',()=>{
+    if(!front.trim()||!back.trim()){showToast('Fill in both sides first',null);return;}
+    const newCard={id:uid(),subjectId,front:front.trim(),back:back.trim(),known:false,createdAt:Date.now()};
+    setData({flashcards:[...(STATE.data.flashcards||[]),newCard]});closeModal();showToast('Card added!',null);
+  }));box.appendChild(btns);
+}
+function buildViewCardModal(box,card){
+  const subj=STATE.data.subjects.find(s=>s.id===card.subjectId);const c=getColour(subj?.colour||'blue');
+  const tt=mk('div','modal-title');tt.textContent=subj?.name||'Flashcard';box.appendChild(tt);
+  const frontWrap=mk('div');frontWrap.style.cssText='background:var(--s2);border:1px solid var(--border2);border-radius:var(--r2);padding:14px 16px;margin-bottom:10px';
+  const fl=mk('div','form-label');fl.textContent='Front (question)';const ft=mk('div');ft.style.cssText='font-size:15px;font-weight:600;color:var(--text);line-height:1.5;margin-top:4px';ft.textContent=card.front;frontWrap.appendChild(fl);frontWrap.appendChild(ft);box.appendChild(frontWrap);
+  const backWrap=mk('div');backWrap.style.cssText=`background:rgba(${c.hex==='#0A84FF'?'10,132,255':c.hex.slice(1).match(/../g).map(h=>parseInt(h,16)).join(',')},.07);border:1px solid ${c.border||'var(--border2)'};border-radius:var(--r2);padding:14px 16px;margin-bottom:16px`;
+  const bl=mk('div','form-label');bl.textContent='Back (answer)';const bt=mk('div');bt.style.cssText='font-size:14px;color:var(--text);line-height:1.6;margin-top:4px';bt.textContent=card.back;backWrap.appendChild(bl);backWrap.appendChild(bt);box.appendChild(backWrap);
+  const kb=mk('button',`done-toggle-btn ${card.known?'done-on':'done-off'}`);kb.textContent=card.known?'✓ Known — tap to reset':'Mark as known';
+  kb.onclick=()=>{setData({flashcards:(STATE.data.flashcards||[]).map(fc=>fc.id===card.id?{...fc,known:!fc.known}:fc)});closeModal();};box.appendChild(kb);
+  const btns=mk('div','modal-btns');
+  btns.appendChild(btn('Delete','btn-danger',()=>{if(confirm('Delete this card?')){setData({flashcards:(STATE.data.flashcards||[]).filter(fc=>fc.id!==card.id)});closeModal();}}));
+  btns.appendChild(btn('Close','btn-primary',closeModal));box.appendChild(btns);
 }
 function buildSyncModal(box){
   const tt=mk('div','modal-title');tt.textContent='Sync';const sub=mk('div','modal-subtitle');sub.textContent='Move data between devices';box.appendChild(tt);box.appendChild(sub);
@@ -1079,7 +1648,7 @@ function render(){
   root.appendChild(renderNavTabs());
   if(STATE.activeTab==='timetable')root.appendChild(renderTimetable());
   else if(STATE.activeTab==='analytics')root.appendChild(renderAnalytics());
-  else if(STATE.activeTab==='brain')root.appendChild(renderBrainMap());
+  else if(STATE.activeTab==='flashcards')root.appendChild(renderFlashcards());
   if(STATE.modal)root.appendChild(renderModal());
   if(STATE.showSettings)root.appendChild(renderSettings());
   startClock();renderPomo();renderWeekend();
