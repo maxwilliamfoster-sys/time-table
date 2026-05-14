@@ -1227,16 +1227,19 @@ async function doLogin(username){
         if(!remote.periodicStats)remote.periodicStats={};
         const remoteTs=remote._lastModified||0;
         const localTs=STATE.data._lastModified||0;
-        if(remoteTs>localTs){
+        // Use cloud if: it's newer, OR this device has never synced before (localTs===0)
+        if(remoteTs>localTs||(localTs===0&&remoteTs>=0)){
           STATE.data=remote;
           try{localStorage.setItem('gcse_'+username,JSON.stringify(remote));}catch(e){}
           render();showToast('Synced from cloud ☁️',null);
         } else {
-          // Push local data up if it's newer or cloud has nothing meaningful
+          // Local is newer — push it up and stamp it
+          if(!STATE.data._lastModified)STATE.data._lastModified=Date.now();
           window._fsSet(username,STATE.data).catch(()=>{});
         }
       } else {
-        // First time in cloud — upload local data
+        // No cloud data yet — upload local and stamp it
+        STATE.data._lastModified=STATE.data._lastModified||Date.now();
         window._fsSet(username,STATE.data).catch(()=>{});
       }
     }catch(e){console.warn('Firestore fetch failed, using local data',e);}
