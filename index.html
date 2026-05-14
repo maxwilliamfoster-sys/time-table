@@ -1349,7 +1349,17 @@ function renderSlotCard(slot,isPast){
   else{badge=mk('div','slot-badge');badge.style.cssText=`background:${c.tag};color:${c.hex}`;badge.textContent=subj?.tag||'Revision';}
   card.appendChild(bar);card.appendChild(tick);card.appendChild(name);card.appendChild(time);card.appendChild(badge);
   if(slot.note){const np=mk('div','slot-note-preview');np.textContent='📝 '+slot.note;card.appendChild(np);}
-  card.onclick=()=>openModal({type:'slot',slot:{...slot},isPast});
+  let _tapTimer=null;
+  card.onclick=()=>{
+    if(isPast){openModal({type:'slot',slot:{...slot},isPast});return;}
+    if(_tapTimer){
+      clearTimeout(_tapTimer);_tapTimer=null;
+      pushUndo('toggle done');
+      setData({slots:STATE.data.slots.map(s=>s.id===slot.id?{...s,done:!s.done}:s)});
+    } else {
+      _tapTimer=setTimeout(()=>{_tapTimer=null;openModal({type:'slot',slot:{...slot},isPast});},280);
+    }
+  };
   return card;
 }
 
