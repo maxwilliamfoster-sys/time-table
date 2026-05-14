@@ -1149,6 +1149,7 @@ function doLogin(username){
   addKnownUser(username);STATE.bgImageData=loadBgImage();STATE.username=username;
   const saved=loadUserData(username)||getDefaultData();
   if(!saved.analytics)saved.analytics={daily:{},weekly:{},monthly:{},subjectTotals:{}};
+  if(!saved.periodicStats)saved.periodicStats={};
   STATE.data=saved;STATE.screen='app';
   if(!STATE.data.weekLabel){STATE.data.weekLabel=getAutoWeekLabel();if(username)saveUserData(username,STATE.data);}
   requestNotifications();
